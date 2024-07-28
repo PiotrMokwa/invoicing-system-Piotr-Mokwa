@@ -12,8 +12,8 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
-    id'checkstyle'
-    id'jacoco'
+    id 'checkstyle'
+    id 'jacoco'
 }
 checkstyle {
     showViolations = true
@@ -36,6 +36,12 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:32.0.0-android'
+
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
 application {
@@ -69,13 +75,13 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                counter ="BRANCH"
+                counter = "BRANCH"
                 minimum = 0.7
             }
         }
         rule {
             limit {
-                counter ="LINE"
+                counter = "LINE"
                 minimum = 0.7
             }
         }
