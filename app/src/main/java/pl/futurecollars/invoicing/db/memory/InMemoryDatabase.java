@@ -6,6 +6,7 @@ import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
 public class InMemoryDatabase implements Database {
+  List<Invoice> invoiceList;
 
   @Override
   public boolean save(Invoice invoice) {
