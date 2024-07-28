@@ -1,5 +1,4 @@
 #!/bin/sh
-
 #
 # Copyright © 2015-2021 the original authors.
 #
@@ -39,7 +38,6 @@
 #
 #   Important for patching:
 #
-
 #   (2) This script targets any POSIX shell, so it avoids extensions provided
 #       by Bash, Ksh, etc; in particular arrays are avoided.
 #
