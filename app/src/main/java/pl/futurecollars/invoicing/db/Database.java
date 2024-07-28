@@ -9,7 +9,7 @@ public interface Database {
 
   Optional<Invoice> getById(int id);
 
-  List<Invoice> getALL();
+  List<Invoice> getAll();
 
   void update(int id, Invoice updateInvoice);
 
