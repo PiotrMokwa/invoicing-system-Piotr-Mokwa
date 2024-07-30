@@ -2,7 +2,7 @@ package pl.futurecollars.invoicing.service
 
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
-import spock.lang.Specification;
+import spock.lang.Specification
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabaseTest
@@ -22,14 +22,14 @@ class InvoiceServiceUnitTest extends Specification {
         InvoiceService invoiceService = new InvoiceService(dataBase)
 
         when:
-        Invoice invoice = new Invoice();
+        Invoice invoice = new Invoice()
         Optional<Invoice> invoiceOptional = Optional.of(invoice)
 
         dataBase.getById(id) >> invoiceOptional
         def result = invoiceService.getById(id)
 
         then:
-        result == invoiceOptional;
+        result == invoiceOptional
         where: " input Data"
         id = 0
 
@@ -61,7 +61,6 @@ class InvoiceServiceUnitTest extends Specification {
         def dataBase = Mock(Database)
         InvoiceService invoiceService = new InvoiceService(dataBase)
 
-        def i = 0
         List<Invoice> list = new ArrayList<>()
         dataBase.getAll() >> list
 
@@ -79,7 +78,7 @@ class InvoiceServiceUnitTest extends Specification {
         setup: " moc dataBase, add invoice"
         def dataBase = Mock(Database)
         InvoiceService invoiceService = new InvoiceService(dataBase)
-        Invoice invoice = new Invoice();
+        Invoice invoice = new Invoice()
         invoiceService.invoices.put(1, invoice)
         System.out.println(invoiceService.invoices.values())
 
