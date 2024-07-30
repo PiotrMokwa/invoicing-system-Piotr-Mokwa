@@ -12,13 +12,14 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
-    id'checkstyle'
+    id 'checkstyle'
+    id 'jacoco'
 }
 checkstyle {
-     showViolations = true
-     ignoreFailures = false
-     maxWarnings = 0
-     maxErrors = 0
+    showViolations = true
+    ignoreFailures = false
+    maxWarnings = 0
+    maxErrors = 0
 }
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -35,6 +36,12 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:32.0.0-android'
+
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
 application {
@@ -46,3 +53,39 @@ tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+jacoco {
+    toolVersion = "0.8.11"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+jacocoTestReport {
+    dependsOn test
+}
+test {
+    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestCoverageVerification
+}
+jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.projectDirectory.dir('jacocoHtml')
+    }
+}
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = "BRANCH"
+                minimum = 0.7
+            }
+        }
+        rule {
+            limit {
+                counter = "LINE"
+                minimum = 0.7
+            }
+        }
+
+    }
+}
+
