@@ -12,6 +12,7 @@ import pl.futurecollars.invoicing.model.Invoice;
 
 @Data
 public class JsonService {
+
   private Path file;
 
   public JsonService() {

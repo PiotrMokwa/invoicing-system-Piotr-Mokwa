@@ -14,6 +14,7 @@ import pl.futurecollars.invoicing.service.JsonService;
 
 @Data
 public class FileBasedDataBase implements Database {
+
   private IdService invoiceId;
   private JsonService jsonService;
   private FileService fileService;
