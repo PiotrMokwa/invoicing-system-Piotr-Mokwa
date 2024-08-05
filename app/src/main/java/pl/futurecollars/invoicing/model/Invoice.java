@@ -12,4 +12,14 @@ public class Invoice {
   private Company buyer;
   private Company seller;
   private List<InvoiceEntry> listOfInvoice;
+
+  public Invoice() {
+  }
+
+  public Invoice(LocalDate date, Company buyer, Company seller, List<InvoiceEntry> listOfInvoice) {
+    this.date = date;
+    this.buyer = buyer;
+    this.seller = seller;
+    this.listOfInvoice = listOfInvoice;
+  }
 }
