@@ -2,6 +2,7 @@ package pl.futurecollars.invoicing.db.file;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Data;
 import pl.futurecollars.invoicing.InvoiceSetup;
 import pl.futurecollars.invoicing.db.Database;
@@ -77,7 +78,7 @@ public class FileBasedDataBase implements Database {
         listOfInvoice
             .stream()
             .map(value -> jsonService.convertToJson(value))
-            .toList()
+            .collect(Collectors.toList())
     );
     return startSizeOfList == sizeOfListAfterDeleting + 1;
   }
@@ -96,7 +97,7 @@ public class FileBasedDataBase implements Database {
         listOfInvoice
             .stream()
             .map(value -> jsonService.convertToJson(value))
-            .toList()
+            .collect(Collectors.toList())
     );
     return Optional.ofNullable(deletedInvoice);
   }
