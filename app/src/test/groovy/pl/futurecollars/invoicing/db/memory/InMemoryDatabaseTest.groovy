@@ -60,7 +60,7 @@ class InMemoryDatabaseTest extends CommonDataBaseTest {
         result == listOfInvoices
     }
 
-    def " update "() {
+    def " update True"() {
         given:
         Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice4.buyer.id = "Updated Company"
@@ -69,6 +69,17 @@ class InMemoryDatabaseTest extends CommonDataBaseTest {
         inMemoryDatabase.update(0, invoice4)
         then:
         Optional.of(invoice4) == inMemoryDatabase.getById(0)
+    }
+
+    def " update False"() {
+        given:
+        Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        invoice4.buyer.id = "Updated Company"
+        invoice4.id = 0
+        when:
+        Optional<Invoice> result =inMemoryDatabase.update(5, invoice4)
+        then:
+         result.isEmpty()
     }
 
     def " delete "() {

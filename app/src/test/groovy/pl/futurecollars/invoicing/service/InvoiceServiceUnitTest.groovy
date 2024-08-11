@@ -1,19 +1,12 @@
 package pl.futurecollars.invoicing.service
 
-import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
-import pl.futurecollars.invoicing.db.memory.InMemoryDatabaseTest
 import spock.lang.Title
-
-
-import java.time.LocalDate
 
 @Title("Testing Invoice Service")
 class InvoiceServiceUnitTest extends Specification {
-
 
     def "get data by ID"() {
 
@@ -42,7 +35,7 @@ class InvoiceServiceUnitTest extends Specification {
         InvoiceService invoiceService = new InvoiceService(dataBase)
         Invoice invoice = new Invoice()
         def i = 0
-        dataBase.update(id, invoice) >> { i++ }
+        dataBase.update(id, invoice) >> { Optional.of(i++)  }
 
         when: " method i-times executed"
 
@@ -51,7 +44,7 @@ class InvoiceServiceUnitTest extends Specification {
         then:
         id == i
 
-        where: " input Data"
+        where: " i-times"
         id = 1
     }
 
@@ -70,25 +63,18 @@ class InvoiceServiceUnitTest extends Specification {
 
         then: " compare"
         result == list
-
     }
 
     def "test delete"() {
 
-        setup: " moc dataBase, add invoice"
+        setup: " moc dataBase"
         def dataBase = Mock(Database)
         InvoiceService invoiceService = new InvoiceService(dataBase)
-        Invoice invoice = new Invoice()
-        invoiceService.invoices.put(1, invoice)
-        System.out.println(invoiceService.invoices.values())
-
-
+        dataBase.delete(0) >> true
         when: " delate invoice"
-        invoiceService.delete(1)
-
-
+        boolean result = invoiceService.delete(0)
         then: " check if is not empty"
-        !invoiceService.invoices.containsValue(invoice)
+        result
     }
 
 }

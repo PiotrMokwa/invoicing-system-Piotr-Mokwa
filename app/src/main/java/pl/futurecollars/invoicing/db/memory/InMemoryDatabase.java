@@ -24,7 +24,6 @@ public class InMemoryDatabase implements Database {
     invoice.setId(nextId);
     beforeInvoice = invoices.put(nextId, invoice);
     nextId++;
-
     return Optional
         .ofNullable(beforeInvoice)
         .isEmpty();
@@ -42,14 +41,17 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public void update(int id, Invoice updateInvoice) {
-    invoices.put(id, updateInvoice);
+  public Optional<Invoice> update(int id, Invoice updateInvoice) {
+
+    boolean isInvoiceNotInBase = !invoices.containsKey(id);
+    Invoice invoice = isInvoiceNotInBase ? null : invoices.put(id, updateInvoice);
+    return Optional.ofNullable(invoice);
   }
 
   @Override
   public boolean delete(int id) {
-    Optional<Invoice> deletedInvoice = Optional
-        .ofNullable(invoices.remove(id));
-    return deletedInvoice.isPresent();
+    Invoice invoice = invoices.remove(id);
+    Optional<Invoice> previusValue = Optional.ofNullable(invoice);
+    return previusValue.isPresent();
   }
 }

@@ -9,18 +9,18 @@ import lombok.Data;
 public class InvoiceSetup {
 
   private Path fileBase;
-  private Path lastInvoiceId;
+  private Path lastIdFilePath;
 
-  public InvoiceSetup(String fileBasePath, String lastIdFilePAth) {
+  public InvoiceSetup(String fileBasePath, String lastIdFilePath) {
 
     this.fileBase = Path.of(fileBasePath);
-    this.lastInvoiceId = Path.of(lastIdFilePAth);
+    this.lastIdFilePath = Path.of(lastIdFilePath);
     if (!Files.exists(this.fileBase)) {
       createBaseFile(this.fileBase);
     }
-    if (!Files.exists(this.lastInvoiceId)) {
-      createLastIdFile(this.lastInvoiceId);
-      writeFirstInvoiceId(this.lastInvoiceId);
+    if (!Files.exists(this.lastIdFilePath)) {
+      createLastIdFile(this.lastIdFilePath);
+      writeFirstInvoiceId(this.lastIdFilePath);
     }
   }
 

@@ -1,69 +1,69 @@
 package pl.futurecollars.invoicing.service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
-import pl.futurecollars.invoicing.InvoiceSetup;
+import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class FileService {
 
-  Path fileData;
-  Path fileLastInvoiceId;
+  private final Path file;
 
-  public FileService(InvoiceSetup invoiceSetup) {
+  public FileService(Path file) {
 
-    this.fileData = invoiceSetup.getFileBase();
-    this.fileLastInvoiceId = invoiceSetup.getLastInvoiceId();
+    this.file = file;
     try {
-      Files.createFile(this.fileData);
+      Files.createFile(file);
     } catch (IOException exception) {
       exception.getStackTrace();
     }
-
   }
 
-  public void writeDataToFile(String invoiceToWrite) {
+  public void appendLineToFile(String invoiceToWrite) {
+    List<String> lines = new ArrayList<>();
+    lines.add(invoiceToWrite);
+    try {
+      Files.write(file, lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+    } catch (IOException exception) {
+      System.out.println(Arrays.toString(exception.getStackTrace()));
+    }
+  }
+
+  public void writeToFile(String text) {
 
     try {
-      Files.writeString(this.fileData, invoiceToWrite, StandardOpenOption.APPEND);
+      Files.write(file, text.getBytes(), StandardOpenOption.WRITE);
 
     } catch (IOException exception) {
       System.out.println(Arrays.toString(exception.getStackTrace()));
     }
   }
 
-  public String readDataFromFile() {
-    String fileData = "";
-    String closeSymbolCollectionJason = " ]";
-    try {
-      fileData = Files.readString(this.fileData) + closeSymbolCollectionJason;
-    } catch (IOException exception) {
-      System.out.println(Arrays.toString(exception.getStackTrace()));
-    }
-    return fileData;
-  }
-
-  public void writeLastInvoiceId(Integer lastInvoiceId) {
+  public void writeLinesToFile(List<String> text) {
 
     try {
-      Files.writeString(this.fileLastInvoiceId, String.valueOf(lastInvoiceId));
+      Files.write(file, text);
 
     } catch (IOException exception) {
       System.out.println(Arrays.toString(exception.getStackTrace()));
     }
   }
 
-  public int readLastInvoiceId() {
-    String lastInvoiceId = "";
+  public List<String> readAllLines() {
+
+    List<String> fileDataArray = new ArrayList<>();
     try {
-      lastInvoiceId = Files.readString(this.fileLastInvoiceId);
+      fileDataArray = Files.readAllLines(file, StandardCharsets.UTF_8);
+
     } catch (IOException exception) {
       System.out.println(Arrays.toString(exception.getStackTrace()));
     }
-
-    return Integer.parseInt(lastInvoiceId);
+    return fileDataArray;
   }
-
 }
