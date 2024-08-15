@@ -1,25 +1,27 @@
 package pl.futurecollars.invoicing.db.memory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.Getter;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
 public class InMemoryDatabase implements Database {
 
-  Integer nextId;
-  private Map<Integer, Invoice> invoices = new HashMap<>();
+  private @Getter int nextId;
+  private final Map<Integer, Invoice> invoices;
 
-  public InMemoryDatabase(Integer nextId) {
+  public InMemoryDatabase(Integer nextId, Map<Integer, Invoice> invoices) {
     this.nextId = nextId;
+    this.invoices = invoices;
   }
 
   @Override
   public boolean save(Invoice invoice) {
     Invoice beforeInvoice;
+    invoice.setId(nextId);
     beforeInvoice = invoices.put(nextId, invoice);
     nextId++;
     return Optional
@@ -39,14 +41,17 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public void update(int id, Invoice updateInvoice) {
-    invoices.put(id, updateInvoice);
+  public Optional<Invoice> update(int id, Invoice updateInvoice) {
+
+    boolean isInvoiceNotInBase = !invoices.containsKey(id);
+    Invoice invoice = isInvoiceNotInBase ? null : invoices.put(id, updateInvoice);
+    return Optional.ofNullable(invoice);
   }
 
   @Override
   public boolean delete(int id) {
-    Optional<Invoice> deletedInvoice = Optional
-        .ofNullable(invoices.remove(id));
-    return deletedInvoice.isPresent();
+    Invoice invoice = invoices.remove(id);
+    Optional<Invoice> previusValue = Optional.ofNullable(invoice);
+    return previusValue.isPresent();
   }
 }
