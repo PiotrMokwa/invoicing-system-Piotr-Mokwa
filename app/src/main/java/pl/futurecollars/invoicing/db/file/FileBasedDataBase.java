@@ -37,7 +37,14 @@ public class FileBasedDataBase implements Database {
   @Override
   public Optional<Invoice> getById(int id) {
 
-    return Optional.ofNullable(getAll().get(id));
+    Invoice list = null;
+    try {
+      list = getAll().get(id);
+    } catch (IndexOutOfBoundsException e) {
+      System.out.println(e);
+    }
+    return Optional.ofNullable(list);
+
   }
 
   @Override
@@ -67,10 +74,10 @@ public class FileBasedDataBase implements Database {
   public boolean delete(int id) {
     List<Invoice> listOfInvoice = getAll();
     int startSizeOfList = listOfInvoice.size();
-    Invoice invoice;
+
     try {
-      invoice = listOfInvoice.remove(id);
-    } catch (UnsupportedOperationException e) {
+      listOfInvoice.remove(id);
+    } catch (IndexOutOfBoundsException e) {
       e.printStackTrace();
     }
     int sizeOfListAfterDeleting = listOfInvoice.size();
@@ -90,7 +97,7 @@ public class FileBasedDataBase implements Database {
     Invoice deletedInvoice = null;
     try {
       deletedInvoice = listOfInvoice.set(id, updateInvoice);
-    } catch (UnsupportedOperationException e) {
+    } catch (IndexOutOfBoundsException e) {
       e.printStackTrace();
     }
     fileService.writeLinesToFile(
