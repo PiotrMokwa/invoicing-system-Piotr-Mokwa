@@ -11,11 +11,12 @@ plugins {
     id 'groovy'
 
     // Apply the application plugin to add support for building a CLI application in Java.
+    // disable  File -> Settings... -> Editor -> Inspections -> Groovy -> Assignment issues -> disable Incompatible type assignments
     id 'application'
     id 'checkstyle'
     id 'jacoco'
     id 'java'
-//    id 'org.springframework.boot' version '3.3.2' // zadanie 4
+    id 'org.springframework.boot' version '3.3.0' // zadanie 4
     id 'io.spring.dependency-management' version '1.1.6'
 }
 checkstyle {
@@ -49,13 +50,13 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2'
 
-//    implementation 'org.springframework.boot:spring-boot-starter-data-rest' // zadanie 4
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
-//    implementation 'org.springframework.boot:spring-boot-starter-web-services'
-//    implementation 'org.springframework.session:spring-session-core'
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-//    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.springframework.session:spring-session-core'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 
