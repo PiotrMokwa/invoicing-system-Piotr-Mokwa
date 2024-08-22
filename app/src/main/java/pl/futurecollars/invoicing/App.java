@@ -1,13 +1,14 @@
 package pl.futurecollars.invoicing;
 
 import org.springframework.boot.SpringApplication;
-import pl.futurecollars.invoicing.service.InvoiceController;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class App {
 
   public static void main(String[] args) {
-    SpringApplication.run(InvoiceController.class, args);
+
+    SpringApplication.run(App.class, args);
+
   }
 }
-
-

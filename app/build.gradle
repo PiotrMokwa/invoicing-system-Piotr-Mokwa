@@ -11,12 +11,11 @@ plugins {
     id 'groovy'
 
     // Apply the application plugin to add support for building a CLI application in Java.
-    // disable  File -> Settings... -> Editor -> Inspections -> Groovy -> Assignment issues -> disable Incompatible type assignments
     id 'application'
     id 'checkstyle'
     id 'jacoco'
     id 'java'
-    id 'org.springframework.boot' version '3.3.0' // zadanie 4
+    id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
 }
 checkstyle {
@@ -107,4 +106,3 @@ jacocoTestCoverageVerification {
 
     }
 }
-

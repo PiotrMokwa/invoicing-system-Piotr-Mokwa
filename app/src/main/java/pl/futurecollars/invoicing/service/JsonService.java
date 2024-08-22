@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.InvoiceSetup;
 import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@Service
 @Data
 public class JsonService {
 
@@ -20,7 +22,7 @@ public class JsonService {
   private Path file;
 
   public JsonService(InvoiceSetup invoiceSetup) {
-    this.fileService = new FileService(invoiceSetup.getLastIdFilePath());
+    this.fileService = new FileService();
     this.idService = new IdService(invoiceSetup);
   }
 

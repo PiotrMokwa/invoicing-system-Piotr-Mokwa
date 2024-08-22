@@ -9,23 +9,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
+import org.springframework.stereotype.Service;
 
+@Service
 @Getter
 public class FileService {
 
-  private final Path file;
+  public FileService() {
 
-  public FileService(Path file) {
-
-    this.file = file;
-    try {
-      Files.createFile(file);
-    } catch (IOException exception) {
-      exception.getStackTrace();
-    }
   }
 
-  public void appendLineToFile(String invoiceToWrite) {
+  public void appendLineToFile(Path file, String invoiceToWrite) {
     List<String> lines = new ArrayList<>();
     lines.add(invoiceToWrite);
     try {
@@ -35,7 +29,7 @@ public class FileService {
     }
   }
 
-  public void writeToFile(String text) {
+  public void writeToFile(Path file, String text) {
 
     try {
       Files.write(file, text.getBytes(), StandardOpenOption.WRITE);
@@ -45,7 +39,7 @@ public class FileService {
     }
   }
 
-  public void writeLinesToFile(List<String> text) {
+  public void writeLinesToFile(Path file, List<String> text) {
 
     try {
       Files.write(file, text);
@@ -55,7 +49,7 @@ public class FileService {
     }
   }
 
-  public List<String> readAllLines() {
+  public List<String> readAllLines(Path file) {
 
     List<String> fileDataArray = new ArrayList<>();
     try {

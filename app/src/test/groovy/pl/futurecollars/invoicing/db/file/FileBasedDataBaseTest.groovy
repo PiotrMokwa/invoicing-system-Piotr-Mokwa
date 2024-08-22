@@ -1,6 +1,5 @@
 package pl.futurecollars.invoicing.db.file
 
-import pl.futurecollars.invoicing.InvoiceSetup
 import pl.futurecollars.invoicing.db.CommonDataBaseTest
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Subject
@@ -19,7 +18,6 @@ class FileBasedDataBaseTest extends CommonDataBaseTest {
     def "test save to FileBase ()"() {
 
         given: " create third invoice in FileBase"
-//        FileBasedDataBase fileBasedDataBase = createFileBase()
         Invoice thirdInvoice = createFirstInvoice(
                 createFirstCompany(), createSecondCompany()
         )
@@ -53,19 +51,16 @@ class FileBasedDataBaseTest extends CommonDataBaseTest {
         when: "get all"
         List<Invoice> listOfInvoice = fileBasedDataBase.getAll()
         then:
-        listOfTestedInvoice == fileBasedDataBase.getAll()
+        listOfTestedInvoice == listOfInvoice
 
     }
 
     def "test get all from FileBase false"() {
         given:
-        List<Invoice> listOfTestedInvoice =listOfInvoiceToTest()
         fileBasedDataBase.delete(1)
         fileBasedDataBase.delete(0)
-        when: "get all"
-        List<Invoice> listOfInvoice = fileBasedDataBase.getAll()
-        then:
-        fileBasedDataBase.getAll().get(0) == null;
+        expect:
+        fileBasedDataBase.getAll().get(0) == null
 
     }
 
@@ -84,7 +79,6 @@ class FileBasedDataBaseTest extends CommonDataBaseTest {
 
     }
 
-
     def "test delete true "() {
 
         when: "delete invoice"
@@ -93,38 +87,6 @@ class FileBasedDataBaseTest extends CommonDataBaseTest {
         then: " check is function return true after delete  "
         isDelete
     }
-
-
-
-
-//    def "test get new invoices with every invoice new"() {
-//
-//        when: "get new invoices"
-//        List<Invoice> newInvoices = fileBasedDataBase.getNewInvoices()
-//        then: " get from list added invoice and assert to added one"
-//        newInvoices == fileBasedDataBase.getAll()
-//
-//    }
-
-
-//    def "test write to base"() {
-//
-//        given: " construct file service"
-//        List<Invoice> listFromBase = fileBasedDataBase.getAll()
-//        when: "get write to base"
-//        fileBasedDataBase.writeToBase()
-//        String stringReaded = fileBasedDataBase
-//                .fileService
-//                .readDataFromFile()
-//        List<Invoice> listFromFile = fileBasedDataBase
-//                .jsonService
-//                .convertToInvoices(stringReaded)
-//        then:
-//        listFromFile == listFromBase
-//
-//        cleanup:
-//        "delete files"()
-//    }
 
     def "delete files"() {
         try {
@@ -138,5 +100,4 @@ class FileBasedDataBaseTest extends CommonDataBaseTest {
     void setupSpec() {
 
     }
-
 }

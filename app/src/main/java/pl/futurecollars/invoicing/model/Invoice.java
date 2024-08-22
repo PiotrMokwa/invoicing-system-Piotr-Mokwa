@@ -3,7 +3,9 @@ package pl.futurecollars.invoicing.model;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
+@Service
 @Data
 public class Invoice {
 

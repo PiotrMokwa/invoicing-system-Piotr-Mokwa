@@ -4,20 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
-// @Repository
+@AllArgsConstructor
 public class InMemoryDatabase implements Database {
 
   private @Getter int nextId;
   private final Map<Integer, Invoice> invoices;
-
-  public InMemoryDatabase(Integer nextId, Map<Integer, Invoice> invoices) {
-    this.nextId = nextId;
-    this.invoices = invoices;
-  }
 
   @Override
   public boolean save(Invoice invoice) {

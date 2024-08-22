@@ -12,9 +12,9 @@ import java.time.LocalDate
 
 abstract class CommonDataBaseTest extends Specification {
 
-
     static InvoiceSetup invoiceSetup() {
         InvoiceSetup invoiceSetup = new InvoiceSetup("DataBaseTest.txt", "InvoiceIdTest.txt")
+
         return invoiceSetup
     }
 
@@ -25,12 +25,12 @@ abstract class CommonDataBaseTest extends Specification {
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         fileBasedDataBase.save(invoice1)
         fileBasedDataBase.save(invoice2)
-//        System.out.println(fileBasedDataBase.getAll())
+      System.out.println(fileBasedDataBase.getAll())
         return fileBasedDataBase
     }
 
     static List<Invoice> listOfInvoiceToTest() {
-        List<Invoice> listOfTestedInvoice = new LinkedList<>();
+        List<Invoice> listOfTestedInvoice = new LinkedList<>()
         Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         listOfTestedInvoice.add(invoice1)
@@ -92,6 +92,5 @@ abstract class CommonDataBaseTest extends Specification {
         invoiceEntry.setVatValue(vatValue)
         return invoiceEntry
     }
-
 
 }

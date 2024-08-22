@@ -2,7 +2,9 @@ package pl.futurecollars.invoicing.model;
 
 import java.math.BigDecimal;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
+@Service
 @Data
 public class InvoiceEntry {
 
