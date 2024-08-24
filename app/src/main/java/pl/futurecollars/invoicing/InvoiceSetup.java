@@ -4,23 +4,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
+@Service
 @Data
 public class InvoiceSetup {
 
-  private Path fileBase;
-  private Path lastIdFilePath;
+  private String fileBase;
+  private String lastIdFilePath;
 
   public InvoiceSetup(String fileBasePath, String lastIdFilePath) {
 
-    this.fileBase = Path.of(fileBasePath);
-    this.lastIdFilePath = Path.of(lastIdFilePath);
-    if (!Files.exists(this.fileBase)) {
-      createBaseFile(this.fileBase);
+    this.fileBase = fileBasePath;
+    this.lastIdFilePath = lastIdFilePath;
+    if (!Files.exists(Path.of(this.fileBase))) {
+      createBaseFile(Path.of(this.fileBase));
     }
-    if (!Files.exists(this.lastIdFilePath)) {
-      createLastIdFile(this.lastIdFilePath);
-      writeFirstInvoiceId(this.lastIdFilePath);
+    if (!Files.exists(Path.of(this.lastIdFilePath))) {
+      createLastIdFile(Path.of(this.lastIdFilePath));
+      writeFirstInvoiceId(Path.of(this.lastIdFilePath));
     }
   }
 

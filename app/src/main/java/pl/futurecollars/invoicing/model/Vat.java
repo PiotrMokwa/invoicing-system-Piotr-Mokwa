@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.model;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
 @ToString
@@ -14,6 +15,7 @@ public enum Vat {
   vat_0(0);
   private final BigDecimal vatValue;
 
+  @Autowired
   Vat(int number) {
     this.vatValue = BigDecimal.valueOf(number);
   }

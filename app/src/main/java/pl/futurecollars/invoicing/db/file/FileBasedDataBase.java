@@ -1,27 +1,34 @@
 package pl.futurecollars.invoicing.db.file;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
+import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.InvoiceSetup;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.service.FileService;
 import pl.futurecollars.invoicing.service.JsonService;
 
+@Repository
 @Data
 public class FileBasedDataBase implements Database {
 
   private IdService invoiceId;
   private JsonService jsonService;
   private FileService fileService;
+  private final Path fileBase;
+  private final Path fileId;
 
   public FileBasedDataBase(InvoiceSetup invoiceSetup) {
-
+    this.fileBase = Path.of(invoiceSetup.getFileBase());
+    this.fileId = Path.of(invoiceSetup.getLastIdFilePath());
     this.jsonService = new JsonService(invoiceSetup);
-    this.fileService = new FileService(invoiceSetup.getFileBase());
+    this.fileService = new FileService();
     this.invoiceId = new IdService(invoiceSetup);
+
   }
 
   @Override
@@ -30,21 +37,20 @@ public class FileBasedDataBase implements Database {
     invoice.setId(nextId);
 
     this.invoiceId.setNextId();
-    fileService.appendLineToFile(jsonService.convertToJson(invoice));
+    fileService.appendLineToFile(fileBase, jsonService.convertToJson(invoice));
     return true;
   }
 
   @Override
   public Optional<Invoice> getById(int id) {
-
-    Invoice list = null;
+    Invoice invoice = null;
     try {
-      list = getAll().get(id);
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println(e);
-    }
-    return Optional.ofNullable(list);
+      invoice = getAll().get(id);
 
+    } catch (IndexOutOfBoundsException exception) {
+      exception.printStackTrace();
+    }
+    return Optional.ofNullable(invoice);
   }
 
   @Override
@@ -52,8 +58,8 @@ public class FileBasedDataBase implements Database {
 
     String startCollectionsSign = "[";
     String endCollectionsSign = "]";
-    List<String> allLines = fileService.readAllLines();
-    String readedInvoices = "";
+    List<String> allLines = fileService.readAllLines(fileBase);
+    String readedInvoices;
     readedInvoices = String.join("", allLines);
     String readedInvoicesWithoutLastSeparator = null;
     if (!allLines.isEmpty()) {
@@ -74,14 +80,13 @@ public class FileBasedDataBase implements Database {
   public boolean delete(int id) {
     List<Invoice> listOfInvoice = getAll();
     int startSizeOfList = listOfInvoice.size();
-
     try {
       listOfInvoice.remove(id);
     } catch (IndexOutOfBoundsException e) {
       e.printStackTrace();
     }
     int sizeOfListAfterDeleting = listOfInvoice.size();
-    fileService.writeLinesToFile(
+    fileService.writeLinesToFile(fileBase,
         listOfInvoice
             .stream()
             .map(value -> jsonService.convertToJson(value))
@@ -97,10 +102,10 @@ public class FileBasedDataBase implements Database {
     Invoice deletedInvoice = null;
     try {
       deletedInvoice = listOfInvoice.set(id, updateInvoice);
-    } catch (IndexOutOfBoundsException e) {
+    } catch (UnsupportedOperationException e) {
       e.printStackTrace();
     }
-    fileService.writeLinesToFile(
+    fileService.writeLinesToFile(fileBase,
         listOfInvoice
             .stream()
             .map(value -> jsonService.convertToJson(value))

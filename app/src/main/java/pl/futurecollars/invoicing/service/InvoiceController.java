@@ -2,7 +2,7 @@ package pl.futurecollars.invoicing.service;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,32 +14,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.futurecollars.invoicing.Generated;
-import pl.futurecollars.invoicing.InvoiceSetup;
-import pl.futurecollars.invoicing.db.file.FileBasedDataBase;
+import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.model.Invoice;
 
 @Generated
-@SpringBootApplication
+
 @RestController
 @RequestMapping("invoices")
 public class InvoiceController {
 
-  private final InvoiceSetup invoiceSetup = new InvoiceSetup("Base", "IdInvoice");
-  //  private Map<Integer, Invoice> invoices = new HashMap<>();
-  //  private InvoiceService invoiceService = new InvoiceService(new InMemoryDatabase(0, invoices));
-  private InvoiceService invoiceService = new InvoiceService(new FileBasedDataBase(invoiceSetup));
+  int nextId = 1;
+  InvoiceService invoiceService;
+  Invoice invoice;
+
+  @Autowired
+  public InvoiceController(InvoiceService invoiceService, IdService idService) {
+    this.invoiceService = invoiceService;
+    this.nextId = idService.getNextId();
+  }
 
   @PostMapping("add")
   public ResponseEntity<?> addInvoice(@RequestBody Invoice invoice) {
 
     invoiceService.save(invoice);
-    Optional<Invoice> getAddedInvoice = invoiceService.getById(invoiceService.getAll().size() - 1);
+    Optional<Invoice> getAddedInvoice = invoiceService.getById(nextId - 1);
     if (getAddedInvoice.isEmpty()) {
       getAddedInvoice = null;
     }
-
+    this.invoice = invoice;
     Optional<Invoice> finalGetAddedInvoice = getAddedInvoice;
-
+    nextId++;
     return Optional.ofNullable(getAddedInvoice)
         .map(value1 -> ResponseEntity.status(HttpStatus.CREATED)
             .body(
@@ -83,7 +87,7 @@ public class InvoiceController {
 
     return Optional.ofNullable(invoiceHolder)
         .map(value -> ResponseEntity.status(HttpStatus.CREATED)
-            .body(invoiceHolder.get())
+            .body(invoice)
         )
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
