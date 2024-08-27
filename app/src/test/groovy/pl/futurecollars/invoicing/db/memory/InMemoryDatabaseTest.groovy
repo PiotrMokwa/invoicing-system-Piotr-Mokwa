@@ -1,11 +1,11 @@
 package pl.futurecollars.invoicing.db.memory
-import pl.futurecollars.invoicing.db.CommonDataBaseTest
+import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Subject
 import spock.lang.Title
 
 @Title("testing InMemoryDataBase")
-class InMemoryDatabaseTest extends CommonDataBaseTest {
+class InMemoryDatabaseTest extends TestHelpers {
 
     @Subject
     InMemoryDatabase inMemoryDatabase = createInMemoryBase()
@@ -54,6 +54,8 @@ class InMemoryDatabaseTest extends CommonDataBaseTest {
         List<Invoice> listOfInvoices = new ArrayList<>()
         listOfInvoices[0] = invoice1
         listOfInvoices[1] = invoice2
+
+
         when:
         List<Invoice> result = inMemoryDatabase.getAll()
         then:

@@ -3,8 +3,8 @@ package pl.futurecollars.invoicing.db.file;
 import java.nio.file.Path;
 import lombok.Data;
 import org.springframework.stereotype.Service;
-import pl.futurecollars.invoicing.InvoiceSetup;
 import pl.futurecollars.invoicing.service.FileService;
+import pl.futurecollars.invoicing.setup.InvoiceSetup;
 
 @Service
 @Data
@@ -17,18 +17,16 @@ public class IdService {
   public IdService(InvoiceSetup invoiceSetup) {
     this.fileId = Path.of(invoiceSetup.getLastIdFilePath());
     this.fileService = new FileService();
-    this.nextId = getNextId();
+    this.nextId = getId();
   }
 
   public void setNextId() {
-
+    System.out.println(nextId);
     fileService.writeToFile(fileId, String.valueOf(++this.nextId));
   }
 
-  public int getNextId() {
-    String firstInvoiceId = "1";
-    boolean isFirstInvoice = fileService.readAllLines(fileId).isEmpty();
-    String number = isFirstInvoice ? firstInvoiceId : fileService.readAllLines(fileId).get(0);
+  public int getId() {
+    String number = fileService.readAllLines(fileId).get(0);
     return Integer.parseInt(number);
   }
 }

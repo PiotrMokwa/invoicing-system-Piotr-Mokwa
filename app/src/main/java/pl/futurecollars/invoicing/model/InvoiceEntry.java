@@ -6,10 +6,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Data
+
 public class InvoiceEntry {
 
   private String description;
   private BigDecimal price;
   private BigDecimal vatValue;
   private Vat vatRate;
+
+
 }
