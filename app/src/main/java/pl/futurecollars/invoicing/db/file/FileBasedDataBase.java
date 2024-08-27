@@ -6,11 +6,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
 import org.springframework.stereotype.Repository;
+import pl.futurecollars.invoicing.InvoiceSetup;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.service.FileService;
 import pl.futurecollars.invoicing.service.JsonService;
-import pl.futurecollars.invoicing.setup.InvoiceSetup;
 
 @Repository
 @Data
@@ -32,21 +32,21 @@ public class FileBasedDataBase implements Database {
   }
 
   @Override
-  public int save(Invoice invoice) {
-    int invoiceId = this.invoiceId.getId();
-    invoice.setId(invoiceId);
+  public boolean save(Invoice invoice) {
+    int nextId = this.invoiceId.getNextId();
+    invoice.setId(nextId);
 
     this.invoiceId.setNextId();
     fileService.appendLineToFile(fileBase, jsonService.convertToJson(invoice));
-    return invoiceId;
+    return true;
   }
 
   @Override
   public Optional<Invoice> getById(int id) {
     Invoice invoice = null;
-    int standartizeIdBetwenBases = 1;
     try {
-      invoice = getAll().get(id - standartizeIdBetwenBases);
+      invoice = getAll().get(id);
+
     } catch (IndexOutOfBoundsException exception) {
       exception.printStackTrace();
     }
@@ -61,7 +61,7 @@ public class FileBasedDataBase implements Database {
     List<String> allLines = fileService.readAllLines(fileBase);
     String readedInvoices;
     readedInvoices = String.join("", allLines);
-    String readedInvoicesWithoutLastSeparator = "";
+    String readedInvoicesWithoutLastSeparator = null;
     if (!allLines.isEmpty()) {
       try {
         readedInvoicesWithoutLastSeparator = readedInvoices.substring(0, readedInvoices.length() - 2);
@@ -78,12 +78,10 @@ public class FileBasedDataBase implements Database {
 
   @Override
   public boolean delete(int id) {
-    int standartizeIdBetwenBases = 1;
     List<Invoice> listOfInvoice = getAll();
     int startSizeOfList = listOfInvoice.size();
-    System.out.println(startSizeOfList);
     try {
-      listOfInvoice.remove(id - standartizeIdBetwenBases);
+      listOfInvoice.remove(id);
     } catch (IndexOutOfBoundsException e) {
       e.printStackTrace();
     }
@@ -101,11 +99,10 @@ public class FileBasedDataBase implements Database {
   public Optional<Invoice> update(int id, Invoice updateInvoice) {
     List<Invoice> listOfInvoice = this.getAll();
     updateInvoice.setId(id);
-    int standartizeIdBetwenBases = 1;
     Invoice deletedInvoice = null;
     try {
-      deletedInvoice = listOfInvoice.set(id - standartizeIdBetwenBases, updateInvoice);
-    } catch (IndexOutOfBoundsException e) {
+      deletedInvoice = listOfInvoice.set(id, updateInvoice);
+    } catch (UnsupportedOperationException e) {
       e.printStackTrace();
     }
     fileService.writeLinesToFile(fileBase,

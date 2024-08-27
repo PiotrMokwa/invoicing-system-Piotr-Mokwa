@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.setup;
+package pl.futurecollars.invoicing;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,7 +47,7 @@ public class InvoiceSetup {
   private static void writeFirstInvoiceId(Path lastIdFile) {
 
     try {
-      Files.writeString(lastIdFile, "1");
+      Files.writeString(lastIdFile, "0");
     } catch (IOException exception) {
       System.out.println(exception.getMessage());
     }

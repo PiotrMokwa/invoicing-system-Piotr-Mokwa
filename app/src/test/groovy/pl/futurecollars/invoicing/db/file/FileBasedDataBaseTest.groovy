@@ -1,32 +1,32 @@
 package pl.futurecollars.invoicing.db.file
 
-import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.db.CommonDataBaseTest
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Subject
 import java.nio.file.Files
 import java.nio.file.Path
 
-class FileBasedDataBaseTest extends TestHelpers {
+class FileBasedDataBaseTest extends CommonDataBaseTest {
 
     @Subject
     FileBasedDataBase fileBasedDataBase = createFileBase()
 
-
-    void setupSpec() {
+    void cleanup(){
         "delete files"()
     }
-
 
     def "test save to FileBase ()"() {
 
         given: " create third invoice in FileBase"
-        Invoice thirdInvoice = createSecondInvoice(createSecondCompany(), createFirstCompany())
-        thirdInvoice.setId(3)
+        Invoice thirdInvoice = createFirstInvoice(
+                createFirstCompany(), createSecondCompany()
+        )
+
         when: "save"
 
         fileBasedDataBase.save(thirdInvoice)
         Invoice thirdInvoiceFromBase = fileBasedDataBase
-                .getById(3)
+                .getById(2)
                 .get()
         then: " compare added invoice with invoice from base"
         thirdInvoiceFromBase == thirdInvoice
@@ -36,10 +36,10 @@ class FileBasedDataBaseTest extends TestHelpers {
 
         given: " create the same invoice as in the base"
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
-        invoice2.setId(2)
+        invoice2.setId(1)
         when: "get By Id"
         Optional secondInvoiceFromBase = fileBasedDataBase
-                .getById(2)
+                .getById(1)
         then: " compare created invice with invoice geted from base"
         secondInvoiceFromBase.get() == invoice2
     }
@@ -57,14 +57,10 @@ class FileBasedDataBaseTest extends TestHelpers {
 
     def "test get all from FileBase false"() {
         given:
-        fileBasedDataBase.delete(2)
         fileBasedDataBase.delete(1)
+        fileBasedDataBase.delete(0)
         expect:
-        try {
-            fileBasedDataBase.getAll().get(0) == null
-        }catch (IndexOutOfBoundsException exception){
-            exception.printStackTrace()
-        }
+        fileBasedDataBase.getAll().get(0) == null
 
     }
 
@@ -101,8 +97,7 @@ class FileBasedDataBaseTest extends TestHelpers {
         }
     }
 
-    void cleanup(){
-        "delete files"()
-    }
+    void setupSpec() {
 
+    }
 }

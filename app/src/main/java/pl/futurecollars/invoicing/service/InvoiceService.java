@@ -32,7 +32,7 @@ public class InvoiceService {
     return dataBase.delete(id);
   }
 
-  public int save(Invoice invoice) {
+  public boolean save(Invoice invoice) {
     return dataBase.save(invoice);
   }
 }

@@ -5,23 +5,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
 @AllArgsConstructor
 public class InMemoryDatabase implements Database {
 
-  private int nextId;
+  private @Getter int nextId;
   private final Map<Integer, Invoice> invoices;
 
   @Override
-  public int save(Invoice invoice) {
-
-    int addedInvoiceId = this.nextId;
-    invoice.setId(addedInvoiceId);
-    invoices.put(addedInvoiceId, invoice);
-    this.nextId++;
-    return addedInvoiceId;
+  public boolean save(Invoice invoice) {
+    Invoice beforeInvoice;
+    invoice.setId(nextId);
+    beforeInvoice = invoices.put(nextId, invoice);
+    nextId++;
+    return Optional
+        .ofNullable(beforeInvoice)
+        .isEmpty();
   }
 
   @Override
