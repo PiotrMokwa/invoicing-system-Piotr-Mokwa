@@ -9,9 +9,9 @@ import java.nio.file.Path;
 import java.util.List;
 import lombok.Data;
 import org.springframework.stereotype.Service;
-import pl.futurecollars.invoicing.InvoiceSetup;
 import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.setup.InvoiceSetup;
 
 @Service
 @Data
@@ -61,4 +61,22 @@ public class JsonService {
     }
     return objectWithJason;
   }
+
+  // Generic to prepare. integratin Test simplify
+  //  public  <T> T convertToObject (String jsonString, T type){
+  //    ObjectMapper objectMapper = new ObjectMapper();
+  //    TypeReference<T> ref = new TypeReference<>() { };
+  //    JavaType javaType = objectMapper.getTypeFactory().constructType(ref.getType());
+  //
+  //    T objectWithJason = null;
+  //    try {
+  //      objectMapper.registerModule(new JavaTimeModule());
+  //      objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+  //      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+  //      objectWithJason = objectMapper.readValue(jsonString,ref);
+  //    } catch (IOException exception) {
+  //      System.out.println(exception.getMessage());
+  //    }
+  //    return objectWithJason;
+  //  }
 }
