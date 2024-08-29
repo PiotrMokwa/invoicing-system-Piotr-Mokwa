@@ -6,11 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @Getter
 public class FileService {
@@ -25,8 +26,9 @@ public class FileService {
     try {
       Files.write(file, lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND);
     } catch (IOException exception) {
-      System.out.println(Arrays.toString(exception.getStackTrace()));
+      log.warn(exception.toString());
     }
+    log.info("appendLineToFile");
   }
 
   public void writeToFile(Path file, String text) {
@@ -35,8 +37,9 @@ public class FileService {
       Files.write(file, text.getBytes(), StandardOpenOption.WRITE);
 
     } catch (IOException exception) {
-      System.out.println(Arrays.toString(exception.getStackTrace()));
+      log.warn(exception.toString());
     }
+    log.info("writeToFile");
   }
 
   public void writeLinesToFile(Path file, List<String> text) {
@@ -45,8 +48,9 @@ public class FileService {
       Files.write(file, text);
 
     } catch (IOException exception) {
-      System.out.println(Arrays.toString(exception.getStackTrace()));
+      log.warn(exception.toString());
     }
+    log.info("writeLinesToFile");
   }
 
   public List<String> readAllLines(Path file) {
@@ -56,8 +60,9 @@ public class FileService {
       fileDataArray = Files.readAllLines(file, StandardCharsets.UTF_8);
 
     } catch (IOException exception) {
-      System.out.println(Arrays.toString(exception.getStackTrace()));
+      log.warn(exception.toString());
     }
+    log.info("readAllLines");
     return fileDataArray;
   }
 }

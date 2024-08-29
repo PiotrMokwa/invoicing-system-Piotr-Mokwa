@@ -2,6 +2,7 @@ package pl.futurecollars.invoicing.service;
 
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.model.Invoice;
 
 @Generated
-
+@Slf4j
 @RestController
 @RequestMapping("invoices")
 public class InvoiceController {
@@ -28,7 +29,6 @@ public class InvoiceController {
   @Autowired
   public InvoiceController(InvoiceService invoiceService, IdService idService) {
     this.invoiceService = invoiceService;
-
   }
 
   @PostMapping("add")
@@ -40,6 +40,8 @@ public class InvoiceController {
       getAddedInvoice = null;
     }
     Optional<Invoice> finalGetAddedInvoice = getAddedInvoice;
+    String logMessage = getAddedInvoice.isEmpty() ? "Server aces point: not add" : "Server aces point: add";
+    log.info(logMessage);
     return Optional.ofNullable(getAddedInvoice)
         .map(value1 -> ResponseEntity.status(HttpStatus.CREATED)
             .body(
@@ -53,6 +55,11 @@ public class InvoiceController {
 
     List<Invoice> list;
     list = invoiceService.getAll().isEmpty() ? null : invoiceService.getAll();
+    String logMessage = "Server aces point GET Invoices :"
+        + (list == null ? " null" : " not null");
+
+    log.info(logMessage);
+
     return Optional.ofNullable(list)
         .map(
             value -> ResponseEntity.status(HttpStatus.ACCEPTED)
@@ -64,7 +71,8 @@ public class InvoiceController {
   public ResponseEntity<?> getInvoice(@PathVariable int id) {
     Optional<Invoice> invoice;
     invoice = invoiceService.getById(id).isEmpty() ? null : invoiceService.getById(id);
-
+    String logMessage = "Server aces point: GET invoice:" + !(invoice == null);
+    log.info(logMessage);
     return Optional.ofNullable(invoice)
         .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED)
             .body(invoice)
@@ -76,9 +84,14 @@ public class InvoiceController {
   public ResponseEntity<?> updateInvoice(@PathVariable int id, @RequestBody Invoice newInvocie) {
 
     boolean isOldInvoiceEmpty = invoiceService.update(id, newInvocie).isEmpty();
-    System.out.println("is place empty" + isOldInvoiceEmpty);
     Optional<Invoice> newInvoiceFromBase = invoiceService.getById(id);
     Optional<Invoice> invoiceHolder = isOldInvoiceEmpty ? null : newInvoiceFromBase;
+
+    String logMessage = "Server aces point: update invoice nr:"
+        + id
+        + " "
+        + !isOldInvoiceEmpty;
+    log.info(logMessage);
     return Optional.ofNullable(invoiceHolder)
         .map(value -> ResponseEntity.status(HttpStatus.CREATED)
             .body(newInvoiceFromBase)
@@ -90,6 +103,11 @@ public class InvoiceController {
   public ResponseEntity<?> delete(@PathVariable int id) {
     Optional<Boolean> wasElementToDelete = Optional.of(invoiceService.delete(id));
     wasElementToDelete = (wasElementToDelete.get() == true) ? wasElementToDelete : null;
+    String logMessage = "Server aces point: delete invoice nr: "
+        + id
+        + " "
+        + !(wasElementToDelete == null);
+    log.info(logMessage);
     return Optional.ofNullable(wasElementToDelete)
         .map(
             value -> ResponseEntity.status(HttpStatus.ACCEPTED).body("Invoice was deleted")
