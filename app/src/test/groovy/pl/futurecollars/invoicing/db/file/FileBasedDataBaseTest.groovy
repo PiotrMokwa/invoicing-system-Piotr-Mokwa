@@ -92,6 +92,15 @@ class FileBasedDataBaseTest extends TestHelpers {
         isDelete
     }
 
+    def "test delete false "() {
+
+        when: "delete invoice"
+        boolean isDelete = fileBasedDataBase.delete(3)
+
+        then: " check is function return true after delete  "
+        !isDelete
+    }
+
     def "delete files"() {
         try {
             Files.delete(Path.of("DataBaseTest.txt"))
