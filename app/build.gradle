@@ -12,7 +12,7 @@ buildscript {
         lambokVersion = '1.18.34'
         jacksonVersion = '2.17.2'
         spockSpringVersion = '2.4-M1-groovy-4.0'
-        springVersion = '2.7.18'
+        springVersion = '3.3.2'
         springDependencyManagmentVersion = '1.1.6'
         apachGroovyVersion = '4.0.21'
         junitVersion = '4.13.2'
@@ -31,17 +31,16 @@ plugins {
     id 'org.springframework.boot' version "${springVersion}"
     id 'io.spring.dependency-management' version "${springDependencyManagmentVersion}"
 }
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-parameters'
 }
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
-vendor = JvmVendorSpec.ADOPTIUM
+        vendor = JvmVendorSpec.ADOPTIUM
     }
 
 }
-
 
 
 checkstyle {
@@ -142,6 +141,6 @@ jacocoTestCoverageVerification {
 }
 def profile = "dev"
 bootRun {
-    args = ["--spring.profiles.active="+profile]
+    args = ["--spring.profiles.active=" + profile]
 }
 
