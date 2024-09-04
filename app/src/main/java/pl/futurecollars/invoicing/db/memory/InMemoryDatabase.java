@@ -9,6 +9,7 @@ import pl.futurecollars.invoicing.model.Invoice;
 
 @AllArgsConstructor
 public class InMemoryDatabase implements Database {
+
   private int nextId;
   private final Map<Integer, Invoice> invoices;
 
