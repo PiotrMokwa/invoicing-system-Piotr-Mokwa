@@ -21,6 +21,7 @@ public class InMemoryDatabase implements Database {
     nextId++;
     boolean isInvoiceAdded = invoice.equals(getById(addedInvoiceId));
     return isInvoiceAdded ? addedInvoiceId : null;
+
   }
 
   @Override
