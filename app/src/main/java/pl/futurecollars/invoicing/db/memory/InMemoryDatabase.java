@@ -19,8 +19,7 @@ public class InMemoryDatabase implements Database {
     invoices.put(nextId, invoice);
     int addedInvoiceId = nextId;
     nextId++;
-    boolean isInvoiceAdded = invoice.equals(getById(addedInvoiceId));
-    return isInvoiceAdded ? addedInvoiceId : null;
+    return addedInvoiceId;
 
   }
 

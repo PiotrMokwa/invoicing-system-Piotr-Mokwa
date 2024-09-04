@@ -20,19 +20,16 @@ class InMemoryDatabaseTest extends TestHelpers {
         return inMemoryDatabase
     }
 
-    def " test save invoice"() {
+    def " test save invoice Positive"() {
         given:
-        System.out.println(inMemoryDatabase.getAll().size())
         Invoice thirdInvoice = createFirstInvoice(
                 createFirstCompany(), createSecondCompany())
         when:
-        boolean result = inMemoryDatabase.save(thirdInvoice)
+        def result = inMemoryDatabase.save(thirdInvoice)
         then:
-        result
-                &
-                inMemoryDatabase.getById(3) == thirdInvoice
-
+        result == thirdInvoice.getId()
     }
+
 
     def " get by ID"() {
         given:

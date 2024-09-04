@@ -36,8 +36,7 @@ public class FileBasedDataBase implements Database {
     this.invoiceId.setNextId();
     fileService.appendLineToFile(fileBase, jsonService.convertToJson(invoice));
     log.info("Invoice save");
-    boolean isInvoiceAdded = invoice.equals(getById(invoiceId));
-    return isInvoiceAdded ? invoiceId : null;
+    return invoiceId;
   }
 
   @Override
