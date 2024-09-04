@@ -1,7 +1,6 @@
 package pl.futurecollars.invoicing.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
@@ -18,22 +17,22 @@ public class InvoiceService {
 
   }
 
-  Optional<Invoice> getById(int id) {
+  public Invoice getById(int id) {
     log.info("Invoice Service getById");
     return dataBase.getById(id);
   }
 
-  List<Invoice> getAll() {
+  public List<Invoice> getAll() {
     log.info("Invoice Service getAll");
-    return dataBase.getAll();
+    return dataBase.getAll().isEmpty() ? null : dataBase.getAll();
   }
 
-  Optional<Invoice> update(int id, Invoice updateInvoice) {
+  public Invoice update(int id, Invoice updateInvoice) {
     log.info("Invoice Service update");
     return dataBase.update(id, updateInvoice);
   }
 
-  boolean delete(int id) {
+  public Invoice delete(int id) {
     log.info("Invoice Service delete");
     return dataBase.delete(id);
   }

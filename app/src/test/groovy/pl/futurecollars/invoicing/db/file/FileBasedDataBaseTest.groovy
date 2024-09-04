@@ -27,7 +27,7 @@ class FileBasedDataBaseTest extends TestHelpers {
         fileBasedDataBase.save(thirdInvoice)
         Invoice thirdInvoiceFromBase = fileBasedDataBase
                 .getById(3)
-                .get()
+
         then: " compare added invoice with invoice from base"
         thirdInvoiceFromBase == thirdInvoice
     }
@@ -38,10 +38,10 @@ class FileBasedDataBaseTest extends TestHelpers {
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice2.setId(2)
         when: "get By Id"
-        Optional secondInvoiceFromBase = fileBasedDataBase
+        Invoice secondInvoiceFromBase = fileBasedDataBase
                 .getById(2)
         then: " compare created invice with invoice geted from base"
-        secondInvoiceFromBase.get() == invoice2
+        secondInvoiceFromBase == invoice2
     }
 
     def "test get all from FileBase true"() {
@@ -79,7 +79,7 @@ class FileBasedDataBaseTest extends TestHelpers {
         fileBasedDataBase.update(1, invoice4)
 
         then: " compare updated invoice in base with new invoice"
-        fileBasedDataBase.getById(1).get() == invoice4
+        fileBasedDataBase.getById(1) == invoice4
 
     }
 
@@ -95,10 +95,10 @@ class FileBasedDataBaseTest extends TestHelpers {
     def "test delete false "() {
 
         when: "delete invoice"
-        boolean isDelete = fileBasedDataBase.delete(3)
+        Invoice deletedInvoice = fileBasedDataBase.delete(3)
 
-        then: " check is function return true after delete  "
-        !isDelete
+        then: " check is function return null after delete  "
+        deletedInvoice == null
     }
 
     def "delete files"() {

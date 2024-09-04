@@ -32,27 +32,19 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
 
     def setupSpec() {
         //inMemoryBase prepare
-
 //       String list = mockMvc.perform(get("/invoices/GET Invoices")).andReturn().response.contentAsString
 //        System.out.println(list)
 //        mockMvc.perform(delete("/invoices/delete/0"))
-
         //FileBase prepare
         deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
         createEmptyFilesBase(baseTestFileSpring, baseIdTestFileSpring)
-
-
     }
-
 
     Invoice "Invoice to test"() {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
         invoice.id = 1;
-
-
         return invoice
     }
-
 
     def "AddInvoice"() {
         given:
@@ -65,13 +57,9 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .andReturn()
                 .response
                 .contentAsString
-        System.out.println(inviceCheck)
-
-
         def invoice = "Invoice to test"()
         def invoiceAsJson = jsonService.convertToJson(invoice)
         def invoiceAsJsonWithoutLastSign = invoiceAsJson.substring(0, invoiceAsJson.size() - 2)
-
         when:
         def response = mockMvc
                 .perform(post("/invoices/add")
@@ -81,16 +69,13 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .andReturn()
                 .response
                 .contentAsString
-
         then:
         response == "Invoice nr. 1 was added"
     }
 
     def "GetInvoices"() {
         given:
-
         def invoice = "Invoice to test"()
-
         when:
         def response = mockMvc
                 .perform(get("/invoices/GET Invoices"))
@@ -98,20 +83,14 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .andReturn()
                 .response
                 .contentAsString
-
         def responsInJSon = jsonService.convertToInvoices(response)[0]
-//         def responsInJSon = jsonService.convertToObject(response,Invoice)
-
         then:
         responsInJSon == invoice
-
     }
 
     def "GetInvoice"() {
-
         given:
         def invoice = "Invoice to test"()
-
         when:
         def response = mockMvc
                 .perform(get("/invoices/1"))
@@ -121,26 +100,23 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .contentAsString
 
         def responseInJSon = jsonService.convertToInvoices("[" + response + "]")[0]
-
-
         then:
         responseInJSon == invoice
-
     }
 
     def "UpdateInvoice"() {
         given:
-
-
         def newInvoice = "Invoice to test"()
         newInvoice.setDate(LocalDate.now().minusDays(10))
         def newInvoiceAsJson = jsonService.convertToJson(newInvoice)
         when:
-        def updatedInvoice = mockMvc.perform(
-                put("/invoices/update/1")
-                        .content(newInvoiceAsJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isCreated())
+        def updatedInvoice = mockMvc
+                .perform(
+                        put("/invoices/update/1")
+                                .content(newInvoiceAsJson)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
                 .andReturn()
                 .response
                 .contentAsString
@@ -149,28 +125,29 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
         updatedInvoiceInJson.id = 1
         then:
         updatedInvoiceInJson == newInvoice
-
-
     }
 
     def "delete Invoice"() {
+        given:
+        def newInvoice = "Invoice to test"()
+        newInvoice.setDate(LocalDate.now().minusDays(10))
+//        String invoiceAsJson = jsonService.convertToJson
+
         when:
-        System.out.println("Spring base content " + Files.readAllLines(Path.of("SpringBase.txt")))
-        def result = mockMvc.perform(delete("/invoices/delete/1"))
+        def response = mockMvc.perform(delete("/invoices/delete/1"))
                 .andExpect(status().isAccepted())
                 .andReturn()
                 .response
                 .contentAsString
-
         then:
-        result == "Invoice was deleted"
+        jsonService.convertToInvoices("[" + response + "]")[0] == newInvoice
 
     }
 
     def cleanupSpec() {
 
         //Clean File Base
-        deleteFilesBase(baseTestFileSpring,baseIdTestFileSpring)
+        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
 
     }
 

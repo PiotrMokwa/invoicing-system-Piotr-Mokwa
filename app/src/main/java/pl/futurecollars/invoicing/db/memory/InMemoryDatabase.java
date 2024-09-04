@@ -3,30 +3,28 @@ package pl.futurecollars.invoicing.db.memory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
 @AllArgsConstructor
 public class InMemoryDatabase implements Database {
-
   private int nextId;
   private final Map<Integer, Invoice> invoices;
 
   @Override
   public int save(Invoice invoice) {
-
-    int addedInvoiceId = this.nextId;
-    invoice.setId(addedInvoiceId);
-    invoices.put(addedInvoiceId, invoice);
-    this.nextId++;
-    return addedInvoiceId;
+    invoice.setId(nextId);
+    invoices.put(nextId, invoice);
+    int addedInvoiceId = nextId;
+    nextId++;
+    boolean isInvoiceAdded = invoice.equals(getById(addedInvoiceId));
+    return isInvoiceAdded ? addedInvoiceId : null;
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
-    return Optional.ofNullable(invoices.get(id));
+  public Invoice getById(int id) {
+    return invoices.get(id);
   }
 
   @Override
@@ -36,17 +34,13 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> update(int id, Invoice updateInvoice) {
-
+  public Invoice update(int id, Invoice updateInvoice) {
     boolean isInvoiceNotInBase = !invoices.containsKey(id);
-    Invoice invoice = isInvoiceNotInBase ? null : invoices.put(id, updateInvoice);
-    return Optional.ofNullable(invoice);
+    return isInvoiceNotInBase ? null : invoices.put(id, updateInvoice);
   }
 
   @Override
-  public boolean delete(int id) {
-    Invoice invoice = invoices.remove(id);
-    Optional<Invoice> previusValue = Optional.ofNullable(invoice);
-    return previusValue.isPresent();
+  public Invoice delete(int id) {
+    return invoices.remove(id);
   }
 }
