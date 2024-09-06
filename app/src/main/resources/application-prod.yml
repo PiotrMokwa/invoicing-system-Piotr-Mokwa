@@ -1,0 +1,18 @@
+server:
+  port: 5555
+application:
+  dataBase: fileBase
+  dataBase.filePath.base: prodBase.txt
+  dataBase.filePath.invoiceId: prodBaseId.txt
+  logging:
+    file:
+      name: Logs/prodLogs.log
+    level:
+      pl:
+        futurecollars:
+          invoicing: INFO
+          db: DEBUG
+  spring:
+    output:
+      ansi:
+        enabled: always

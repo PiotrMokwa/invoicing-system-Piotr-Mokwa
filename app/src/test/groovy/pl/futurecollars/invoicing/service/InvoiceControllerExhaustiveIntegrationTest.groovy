@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
@@ -17,6 +18,7 @@ import java.time.LocalDate
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@ActiveProfiles("dev")
 @SpringBootTest
 @AutoConfigureMockMvc
 class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
@@ -40,7 +42,6 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
         invoice.id = 1;
         invoice.date = LocalDate.now().minusDays(1)
-
         return invoice
     }
 
@@ -48,7 +49,6 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
         invoice.id = 2;
         invoice.date = LocalDate.now().minusDays(2)
-
         return invoice
     }
 
@@ -97,9 +97,6 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
 //        System.out.println("next id: " + Files.readAllLines(Path.of("SpringId.txt")))
         def newInvoice = "Invoice nr2"()
         def newInvoiceInJson = jsonService.convertToJson(newInvoice)
-
-
-
         expect: " Update not existing invoice "
         mockMvc.perform(
                 put("/invoices/update/5")
@@ -112,15 +109,14 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
     def "Delete invoice"() {
 
         when: "Delete not existing invoice "
-
-
-        def result = mockMvc.perform(delete("/invoices/delete/2"))
+        def result = mockMvc.perform(delete("/invoices/delete/10"))
                 .andExpect(status().isNotFound())
                 .andReturn()
                 .response
                 .contentAsString
-        then:
-        result == "Invoice was not deleted"
+        then:"check if response body is empty"
+        result == ""
+
     }
 
 
@@ -160,7 +156,6 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
     }
 
     def cleanupSpec() {
-
 
 //Clean File Base
         deleteFilesBase(baseTestFileSpring,baseIdTestFileSpring)

@@ -6,6 +6,19 @@
  * User Manual available at https://docs.gradle.org/8.0/userguide/building_java_projects.html
  */
 
+buildscript {
+    ext {
+
+        lambokVersion = '1.18.34'
+        jacksonVersion = '2.17.2'
+        spockSpringVersion = '2.4-M1-groovy-4.0'
+        springVersion = '3.3.2'
+        springDependencyManagmentVersion = '1.1.6'
+        apachGroovyVersion = '4.0.21'
+        junitVersion = '4.13.2'
+    }
+}
+
 plugins {
     // Apply the groovy plugin to also add support for Groovy (needed for Spock)
     id 'groovy'
@@ -15,9 +28,21 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'java'
-    id 'org.springframework.boot' version '3.3.2'
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.springframework.boot' version "${springVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagmentVersion}"
 }
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-parameters'
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+
+    }
+
+}
+
+
 checkstyle {
     showViolations = true
     ignoreFailures = false
@@ -38,48 +63,37 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // Spring Spock Test dependencies
-    testImplementation 'org.spockframework:spock-spring:2.4-M1-groovy-4.0'
+    testImplementation "org.spockframework:spock-spring:${spockSpringVersion}"
 
     // Spring Core Test dependencies
-    testImplementation 'org.spockframework:spock-core:2.4-M1-groovy-4.0'
-
-
-
+    testImplementation "org.spockframework:spock-core:${spockSpringVersion}"
 
     // Use the latest Groovy version for Spock testing
-    testImplementation 'org.apache.groovy:groovy:4.0.21'
+    testImplementation "org.apache.groovy:groovy:${apachGroovyVersion}"
 
 //     Use the awesome Spock testing and specification framework even with Java
-//    testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'//zmieniono l3kcja 6 niekompatybilne
-    testImplementation 'junit:junit:4.13.2' //zmieniono l3kcja 6
-//    testImplementation 'org.spockframework:spock-spring:1.3-groovy-2.5' //zmieniono l3kcja 6 niekompatybilne
-//
-//    // This dependency is used by the application.
-//    implementation 'com.google.guava:guava:32.0.0-android'
+    testImplementation 'junit:junit:4.13.2'
 
+    compileOnly "org.projectlombok:lombok:${lambokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lambokVersion}"
 
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    testCompileOnly "org.projectlombok:lombok:${lambokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lambokVersion}"
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.34'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
-
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation 'org.springframework.session:spring-session-core'
+    implementation "org.springframework.boot:spring-boot-gradle-plugin:${springVersion}"
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
-
 }
-
 application {
     // Define the main class for the application.
     mainClass = 'pl.futurecollars.invoicing.App'
@@ -121,6 +135,10 @@ jacocoTestCoverageVerification {
                 minimum = 0.83
             }
         }
-
     }
 }
+def profile = "dev"
+bootRun {
+    args = ["--spring.profiles.active=" + profile]
+}
+

@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.Data;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
-@Service
+@Slf4j
 @Data
 public class InvoiceSetup {
 
@@ -19,10 +19,13 @@ public class InvoiceSetup {
     this.lastIdFilePath = lastIdFilePath;
     if (!Files.exists(Path.of(this.fileBase))) {
       createBaseFile(Path.of(this.fileBase));
+      log.info("File base was created");
     }
     if (!Files.exists(Path.of(this.lastIdFilePath))) {
       createLastIdFile(Path.of(this.lastIdFilePath));
       writeFirstInvoiceId(Path.of(this.lastIdFilePath));
+      log.info("File base was created");
+      log.info("Last Id File was created");
     }
   }
 

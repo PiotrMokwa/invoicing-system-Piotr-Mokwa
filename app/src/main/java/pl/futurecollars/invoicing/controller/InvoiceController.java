@@ -1,7 +1,7 @@
-package pl.futurecollars.invoicing.service;
+package pl.futurecollars.invoicing.controller;
 
-import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.futurecollars.invoicing.Generated;
 import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.service.InvoiceService;
 
 @Generated
-
+@Slf4j
 @RestController
 @RequestMapping("invoices")
 public class InvoiceController {
@@ -28,72 +29,40 @@ public class InvoiceController {
   @Autowired
   public InvoiceController(InvoiceService invoiceService, IdService idService) {
     this.invoiceService = invoiceService;
-
   }
 
   @PostMapping("add")
   public ResponseEntity<?> addInvoice(@RequestBody Invoice invoice) {
-
-    int invoiceId = invoiceService.save(invoice);
-    Optional<Invoice> getAddedInvoice = invoiceService.getById(invoiceId);
-    if (getAddedInvoice.isEmpty()) {
-      getAddedInvoice = null;
-    }
-    Optional<Invoice> finalGetAddedInvoice = getAddedInvoice;
-    return Optional.ofNullable(getAddedInvoice)
-        .map(value1 -> ResponseEntity.status(HttpStatus.CREATED)
-            .body(
-                "Invoice nr. " + finalGetAddedInvoice.get().getId() + " was added")
-        )
+    return Optional.ofNullable(invoiceService.save(invoice))
+        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body("Invoice nr. " + value + " was added"))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invoice wasn't added"));
   }
 
   @GetMapping(value = "GET Invoices", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> getInvoices() {
-
-    List<Invoice> list;
-    list = invoiceService.getAll().isEmpty() ? null : invoiceService.getAll();
-    return Optional.ofNullable(list)
-        .map(
-            value -> ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(list))
+    return Optional.ofNullable(invoiceService.getAll())
+        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceService.getAll()))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
   @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> getInvoice(@PathVariable int id) {
-    Optional<Invoice> invoice;
-    invoice = invoiceService.getById(id).isEmpty() ? null : invoiceService.getById(id);
-
-    return Optional.ofNullable(invoice)
-        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED)
-            .body(invoice)
-        )
+    return Optional.ofNullable(invoiceService.getById(id))
+        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceService.getById(id)))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
   @PutMapping(value = "/update/{id}", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> updateInvoice(@PathVariable int id, @RequestBody Invoice newInvocie) {
-
-    boolean isOldInvoiceEmpty = invoiceService.update(id, newInvocie).isEmpty();
-    System.out.println("is place empty" + isOldInvoiceEmpty);
-    Optional<Invoice> newInvoiceFromBase = invoiceService.getById(id);
-    Optional<Invoice> invoiceHolder = isOldInvoiceEmpty ? null : newInvoiceFromBase;
-    return Optional.ofNullable(invoiceHolder)
-        .map(value -> ResponseEntity.status(HttpStatus.CREATED)
-            .body(newInvoiceFromBase)
-        )
+    return Optional.ofNullable(invoiceService.update(id, newInvocie))
+        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.update(id, newInvocie)))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping(value = "/delete/{id}", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> delete(@PathVariable int id) {
-    Optional<Boolean> wasElementToDelete = Optional.of(invoiceService.delete(id));
-    wasElementToDelete = (wasElementToDelete.get() == true) ? wasElementToDelete : null;
-    return Optional.ofNullable(wasElementToDelete)
-        .map(
-            value -> ResponseEntity.status(HttpStatus.ACCEPTED).body("Invoice was deleted")
-        ).orElseGet(
-            () -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invoice was not deleted"));
+    return Optional.ofNullable(invoiceService.delete(id))
+        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 }

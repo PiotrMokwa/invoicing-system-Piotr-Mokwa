@@ -17,20 +17,20 @@ class FileBasedDataBaseTest extends TestHelpers {
     }
 
 
-    def "test save to FileBase ()"() {
+    def "test save to FileBase true "() {
 
         given: " create third invoice in FileBase"
         Invoice thirdInvoice = createSecondInvoice(createSecondCompany(), createFirstCompany())
         thirdInvoice.setId(3)
         when: "save"
-
         fileBasedDataBase.save(thirdInvoice)
         Invoice thirdInvoiceFromBase = fileBasedDataBase
                 .getById(3)
-                .get()
         then: " compare added invoice with invoice from base"
         thirdInvoiceFromBase == thirdInvoice
     }
+
+
 
     def "test get by ID from FileBase"() {
 
@@ -38,16 +38,15 @@ class FileBasedDataBaseTest extends TestHelpers {
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice2.setId(2)
         when: "get By Id"
-        Optional secondInvoiceFromBase = fileBasedDataBase
+        Invoice secondInvoiceFromBase = fileBasedDataBase
                 .getById(2)
         then: " compare created invice with invoice geted from base"
-        secondInvoiceFromBase.get() == invoice2
+        secondInvoiceFromBase == invoice2
     }
 
     def "test get all from FileBase true"() {
         given:
         List<Invoice> listOfTestedInvoice =listOfInvoiceToTest()
-
         when: "get all"
         List<Invoice> listOfInvoice = fileBasedDataBase.getAll()
         then:
@@ -74,12 +73,10 @@ class FileBasedDataBaseTest extends TestHelpers {
         Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice4.buyer.id = "Updated Company"
         invoice4.id = 1
-
         when: "update invoice in base with new invoice"
         fileBasedDataBase.update(1, invoice4)
-
         then: " compare updated invoice in base with new invoice"
-        fileBasedDataBase.getById(1).get() == invoice4
+        fileBasedDataBase.getById(1) == invoice4
 
     }
 
@@ -87,9 +84,16 @@ class FileBasedDataBaseTest extends TestHelpers {
 
         when: "delete invoice"
         boolean isDelete = fileBasedDataBase.delete(1)
-
         then: " check is function return true after delete  "
         isDelete
+    }
+
+    def "test delete false "() {
+
+        when: "delete invoice"
+        Invoice deletedInvoice = fileBasedDataBase.delete(3)
+        then: " check is function return null after delete  "
+        deletedInvoice == null
     }
 
     def "delete files"() {

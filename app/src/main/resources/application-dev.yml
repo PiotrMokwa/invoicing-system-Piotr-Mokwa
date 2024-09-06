@@ -1,0 +1,20 @@
+server:
+  port: 7750
+application:
+  dataBase: inMemoryBase
+  dataBase.filePath.base: devBase.txt
+  dataBase.filePath.invoiceId: devBaseId.txt
+logging:
+  file:
+    name: Logs/devLogs.log
+  level:
+    pl:
+      futurecollars:
+        invoicing: INFO
+        db: DEBUG
+spring:
+  output:
+    ansi:
+      enabled: always
+
+

@@ -2,17 +2,16 @@ package pl.futurecollars.invoicing.db.file;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
-import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.service.FileService;
 import pl.futurecollars.invoicing.service.JsonService;
 import pl.futurecollars.invoicing.setup.InvoiceSetup;
 
-@Repository
+@Slf4j
 @Data
 public class FileBasedDataBase implements Database {
 
@@ -28,36 +27,34 @@ public class FileBasedDataBase implements Database {
     this.jsonService = new JsonService(invoiceSetup);
     this.fileService = new FileService();
     this.invoiceId = new IdService(invoiceSetup);
-
   }
 
   @Override
   public int save(Invoice invoice) {
     int invoiceId = this.invoiceId.getId();
     invoice.setId(invoiceId);
-
     this.invoiceId.setNextId();
     fileService.appendLineToFile(fileBase, jsonService.convertToJson(invoice));
+    log.info("Invoice save");
     return invoiceId;
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
+  public Invoice getById(int id) {
     Invoice invoice = null;
     int standartizeIdBetwenBases = 1;
     try {
       invoice = getAll().get(id - standartizeIdBetwenBases);
     } catch (IndexOutOfBoundsException exception) {
-      exception.printStackTrace();
+      log.warn(exception.toString());
     }
-    return Optional.ofNullable(invoice);
+    log.info("Invoice getById !!!");
+    return invoice;
   }
 
   @Override
   public List<Invoice> getAll() {
 
-    String startCollectionsSign = "[";
-    String endCollectionsSign = "]";
     List<String> allLines = fileService.readAllLines(fileBase);
     String readedInvoices;
     readedInvoices = String.join("", allLines);
@@ -66,39 +63,32 @@ public class FileBasedDataBase implements Database {
       try {
         readedInvoicesWithoutLastSeparator = readedInvoices.substring(0, readedInvoices.length() - 2);
       } catch (IndexOutOfBoundsException e) {
-        e.printStackTrace();
+        log.warn(e.toString());
       }
     }
-    return jsonService.convertToInvoices(
-        startCollectionsSign
-            + readedInvoicesWithoutLastSeparator
-            + endCollectionsSign
-    );
+    log.info(" Get all invoices !!!");
+    String startCollectionsSign = "[";
+    String endCollectionsSign = "]";
+    return jsonService.convertToInvoices(startCollectionsSign + readedInvoicesWithoutLastSeparator + endCollectionsSign);
   }
 
   @Override
-  public boolean delete(int id) {
+  public Invoice delete(int id) {
     int standartizeIdBetwenBases = 1;
     List<Invoice> listOfInvoice = getAll();
-    int startSizeOfList = listOfInvoice.size();
-    System.out.println(startSizeOfList);
+    Invoice delatedInvoice = null;
     try {
-      listOfInvoice.remove(id - standartizeIdBetwenBases);
+      delatedInvoice = listOfInvoice.remove(id - standartizeIdBetwenBases);
     } catch (IndexOutOfBoundsException e) {
-      e.printStackTrace();
+      log.warn(e.toString());
     }
-    int sizeOfListAfterDeleting = listOfInvoice.size();
-    fileService.writeLinesToFile(fileBase,
-        listOfInvoice
-            .stream()
-            .map(value -> jsonService.convertToJson(value))
-            .collect(Collectors.toList())
-    );
-    return startSizeOfList == sizeOfListAfterDeleting + 1;
+    fileService.writeLinesToFile(fileBase, listOfInvoice.stream().map(value -> jsonService.convertToJson(value)).collect(Collectors.toList()));
+    log.info("Delete  !!! Invoice");
+    return delatedInvoice;
   }
 
   @Override
-  public Optional<Invoice> update(int id, Invoice updateInvoice) {
+  public Invoice update(int id, Invoice updateInvoice) {
     List<Invoice> listOfInvoice = this.getAll();
     updateInvoice.setId(id);
     int standartizeIdBetwenBases = 1;
@@ -106,14 +96,10 @@ public class FileBasedDataBase implements Database {
     try {
       deletedInvoice = listOfInvoice.set(id - standartizeIdBetwenBases, updateInvoice);
     } catch (IndexOutOfBoundsException e) {
-      e.printStackTrace();
+      log.warn(e.toString());
     }
-    fileService.writeLinesToFile(fileBase,
-        listOfInvoice
-            .stream()
-            .map(value -> jsonService.convertToJson(value))
-            .collect(Collectors.toList())
-    );
-    return Optional.ofNullable(deletedInvoice);
+    fileService.writeLinesToFile(fileBase, listOfInvoice.stream().map(value -> jsonService.convertToJson(value)).collect(Collectors.toList()));
+    log.info("Update !!! Invoice");
+    return deletedInvoice;
   }
 }

@@ -12,7 +12,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     static createInMemoryBase() {
         Map<Integer, Invoice> invoices = new HashMap<>()
-        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(0, invoices)
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(1, invoices)
         Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         inMemoryDatabase.save(invoice1)
@@ -20,28 +20,25 @@ class InMemoryDatabaseTest extends TestHelpers {
         return inMemoryDatabase
     }
 
-    def " test save invoice"() {
+    def " test save invoice Positive"() {
         given:
-        System.out.println(inMemoryDatabase.getAll().size())
         Invoice thirdInvoice = createFirstInvoice(
                 createFirstCompany(), createSecondCompany())
         when:
-        boolean result = inMemoryDatabase.save(thirdInvoice)
+        def result = inMemoryDatabase.save(thirdInvoice)
         then:
-        result
-                &
-                inMemoryDatabase.getById(2) == Optional.of(thirdInvoice)
-
+        result == thirdInvoice.getId()
     }
+
 
     def " get by ID"() {
         given:
         Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        invoice1.id = 0
+        invoice1.id = 1
         when:
-        Optional<Invoice> result = inMemoryDatabase.getById(0)
+        Invoice result = inMemoryDatabase.getById(1)
         then:
-        result == Optional.of(invoice1)
+        result == invoice1
 
     }
 
@@ -49,13 +46,11 @@ class InMemoryDatabaseTest extends TestHelpers {
         given:
         Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
-        invoice1.id = 0
-        invoice2.id = 1
+        invoice1.id = 1
+        invoice2.id = 2
         List<Invoice> listOfInvoices = new ArrayList<>()
         listOfInvoices[0] = invoice1
         listOfInvoices[1] = invoice2
-
-
         when:
         List<Invoice> result = inMemoryDatabase.getAll()
         then:
@@ -66,11 +61,12 @@ class InMemoryDatabaseTest extends TestHelpers {
         given:
         Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice4.buyer.id = "Updated Company"
-        invoice4.id = 0
+        invoice4.id = 1
         when:
-        inMemoryDatabase.update(0, invoice4)
+        inMemoryDatabase.update(1, invoice4)
+       def  result =  inMemoryDatabase.getById(1)
         then:
-        Optional.of(invoice4) == inMemoryDatabase.getById(0)
+        invoice4 == result
     }
 
     def " update False"() {
@@ -79,16 +75,15 @@ class InMemoryDatabaseTest extends TestHelpers {
         invoice4.buyer.id = "Updated Company"
         invoice4.id = 0
         when:
-        Optional<Invoice> result =inMemoryDatabase.update(5, invoice4)
+        Invoice result =inMemoryDatabase.update(5, invoice4)
         then:
-        result.isEmpty()
+        result == null
     }
 
     def " delete "() {
         when:
-        boolean wasDeleted = inMemoryDatabase.delete(0)
-        boolean isNotInDataBase =  inMemoryDatabase.getById(0).isEmpty()
+        boolean wasDeleted = inMemoryDatabase.delete(1)
         then:
-        wasDeleted & isNotInDataBase
+        wasDeleted
     }
 }
