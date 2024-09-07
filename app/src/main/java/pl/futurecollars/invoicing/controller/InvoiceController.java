@@ -34,8 +34,8 @@ public class InvoiceController {
   @PostMapping("add")
   public ResponseEntity<?> addInvoice(@RequestBody Invoice invoice) {
     return Optional.ofNullable(invoiceService.save(invoice))
-        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body("Invoice nr. " + value + " was added"))
-        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invoice wasn't added"));
+        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body(value))
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
   @GetMapping(value = "GET Invoices", produces = {"application/json;charset=UTF-8"})

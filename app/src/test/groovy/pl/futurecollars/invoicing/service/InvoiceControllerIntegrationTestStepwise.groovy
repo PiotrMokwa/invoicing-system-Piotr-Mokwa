@@ -12,8 +12,6 @@ import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Shared
 import spock.lang.Stepwise
 
-import java.nio.file.Files
-import java.nio.file.Path
 import java.time.LocalDate
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -34,16 +32,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     private JsonService jsonService
 
     def setupSpec() {
-        //inMemoryBase prepare
-//       String list = mockMvc.perform(get("/invoices/GET Invoices")).andReturn().response.contentAsString
-//        System.out.println(list)
-//        mockMvc.perform(delete("/invoices/delete/0"))
-        //FileBase prepare
-//        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
-//        createEmptyFilesBase(baseTestFileSpring, baseIdTestFileSpring)
-
-            "delete all invoices"(mockMvc,jsonService)
-
+        "delete all invoices"(mockMvc, jsonService)
     }
 
     Invoice "Invoice to test"() {
@@ -54,20 +43,17 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
 
     def "AddInvoice"() {
         given:
-// Base in File
-//        System.out.println("next id: " + Files.readAllLines(Path.of("SpringId.txt")))
-//        System.out.println("Spring base content " + Files.readAllLines(Path.of("SpringBase.txt")))
-//baseinmemory
         def inviceCheck = mockMvc
                 .perform(get("/invoices/GET Invoices"))
                 .andReturn()
                 .response
                 .contentAsString
         def invoice = "Invoice to test"()
+
         def invoiceAsJson = jsonService.convertToJson(invoice)
         def invoiceAsJsonWithoutLastSign = invoiceAsJson.substring(0, invoiceAsJson.size() - 2)
         when:
-        def response = mockMvc
+        def addedInvoiceId = mockMvc
                 .perform(post("/invoices/add")
                         .content(invoiceAsJsonWithoutLastSign)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -75,8 +61,20 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .andReturn()
                 .response
                 .contentAsString
+
+        def addedInvoice = mockMvc
+                .perform(get("/invoices/" + addedInvoiceId)
+                        .content(invoiceAsJsonWithoutLastSign)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andReturn()
+                .response
+                .contentAsString
+        System.out.println(addedInvoice)
+        def invoiceFromBase = jsonService.convertToInvoices("[" + addedInvoice + "]").get(0)
+        invoice.setId(invoiceFromBase.getId())
         then:
-        response == "Invoice nr. 1 was added"
+        invoiceFromBase == invoice
     }
 
     def "GetInvoices"() {
@@ -90,6 +88,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .response
                 .contentAsString
         def responsInJSon = jsonService.convertToInvoices(response)[0]
+        invoice.setId(responsInJSon.getId())
         then:
         responsInJSon == invoice
     }

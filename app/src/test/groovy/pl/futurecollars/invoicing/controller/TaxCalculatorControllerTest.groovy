@@ -29,6 +29,10 @@ class TaxCalculatorControllerTest extends TestHelpers {
     @Autowired
     JsonService jsonService
 
+    def setup() {
+        "delete all invoices"(mockMvc, jsonService)
+    }
+
     def "test tax true"() {
         given:
         Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
