@@ -12,7 +12,10 @@ application:
         futurecollars:
           invoicing: INFO
           db: DEBUG
-  spring:
-    output:
-      ansi:
-        enabled: always
+spring:
+  output:
+    ansi:
+      enabled: always
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

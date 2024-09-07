@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.service
 
+import org.spockframework.spring.EnableSharedInjection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -7,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
+import spock.lang.Shared
 
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
@@ -18,24 +20,21 @@ import java.time.LocalDate
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ActiveProfiles("dev")
+@ActiveProfiles("prod")
 @SpringBootTest
 @AutoConfigureMockMvc
+@EnableSharedInjection
 class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
-
+    @Shared
     @Autowired
     private MockMvc mockMvc
 
+    @Shared
     @Autowired
     private JsonService jsonService
-    int index = 0
 
     def setup() {
-
-//fileBase
-        deleteFilesBase(baseTestFileSpring,baseIdTestFileSpring)
-        createEmptyFilesBase(baseTestFileSpring,baseIdTestFileSpring)
-
+        "delete all invoices"(mockMvc, jsonService)
     }
 
     Invoice "Invoice nr1"() {
@@ -99,7 +98,7 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
         def newInvoiceInJson = jsonService.convertToJson(newInvoice)
         expect: " Update not existing invoice "
         mockMvc.perform(
-                put("/invoices/update/5")
+                put("/invoices/update/10")
                         .content(newInvoiceInJson)
                         .contentType("application/json"))
                 .andExpect(status().isNotFound())
@@ -114,51 +113,13 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
                 .andReturn()
                 .response
                 .contentAsString
-        then:"check if response body is empty"
+        then: "check if response body is empty"
         result == ""
 
     }
 
-
-    def cleanup() {
-
-//        if (isFileBaseExist()) {
-//            deleteFilesBase()
-//            createEmptyFilesBase()
-////            System.out.println(index++)
-//        }
-//
-//        def base = mockMvc.perform(get("/invoices/GET Invoices"))
-//                .andReturn()
-//                .response
-//                .contentAsString
-//
-//        System.out.println("Base befor delete" + base)
-//        List<Invoice> baseList = jsonService.convertToInvoices(base)
-//
-//        if(baseList == null)
-//        if (!baseList.isEmpty() ) {
-//            System.out.print(baseList)
-//            int baseSize = baseList.size()
-//            for (int i = 0; i < baseSize; i++) {
-//                String path = "/invoices/delete/" + i
-//                System.out.println(path)
-//                mockMvc.perform(delete(path))
-//                System.out.println("delete executed nr " + i)
-//            }
-//
-//            def baseDelete = mockMvc.perform(get("/invoices/GET Invoices"))
-//                    .andReturn()
-//                    .response
-//                    .contentAsString
-//            System.out.println("Delete base" + baseDelete)
-//        }
-    }
-
     def cleanupSpec() {
-
-//Clean File Base
-        deleteFilesBase(baseTestFileSpring,baseIdTestFileSpring)
-
+        "delete all invoices"(mockMvc, jsonService)
     }
+
 }

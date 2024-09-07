@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.service
 
+import org.spockframework.spring.EnableSharedInjection
 import org.springframework.http.MediaType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -21,14 +22,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("dev")
 @SpringBootTest
 @AutoConfigureMockMvc
+@EnableSharedInjection
 @Stepwise
 class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
 
-
+    @Shared
     @Autowired
     private MockMvc mockMvc
+    @Shared
     @Autowired
-    JsonService jsonService
+    private JsonService jsonService
 
     def setupSpec() {
         //inMemoryBase prepare
@@ -36,8 +39,11 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
 //        System.out.println(list)
 //        mockMvc.perform(delete("/invoices/delete/0"))
         //FileBase prepare
-        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
-        createEmptyFilesBase(baseTestFileSpring, baseIdTestFileSpring)
+//        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
+//        createEmptyFilesBase(baseTestFileSpring, baseIdTestFileSpring)
+
+            "delete all invoices"(mockMvc,jsonService)
+
     }
 
     Invoice "Invoice to test"() {
