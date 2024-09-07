@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import pl.futurecollars.invoicing.model.Invoice;
 
 public interface InvoiceApi {
+
   @ApiOperation(value = "Add new invoice")
   @PostMapping("add")
   ResponseEntity<?> addInvoice(@RequestBody Invoice invoice);

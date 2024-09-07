@@ -144,7 +144,7 @@ abstract class TestHelpers extends Specification {
                 .andReturn()
                 .response
                 .contentAsString
-        int invoiceIndex = 1;
+        int invoiceIndex = 0;
         if (!invoiceList.isEmpty()) {
             System.out.println("invoices list before delet: " + invoiceList)
             System.out.println(invoiceIndex)
