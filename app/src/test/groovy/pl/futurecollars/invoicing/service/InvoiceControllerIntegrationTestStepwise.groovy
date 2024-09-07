@@ -11,6 +11,7 @@ import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Shared
 import spock.lang.Stepwise
+import static java.util.stream.Collectors.*;
 
 import java.time.LocalDate
 
@@ -27,6 +28,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     @Shared
     @Autowired
     private MockMvc mockMvc
+
     @Shared
     @Autowired
     private JsonService jsonService
@@ -39,6 +41,20 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
         invoice.id = 1;
         return invoice
+    }
+
+    int "get invoice number"(){
+        def response = mockMvc
+                .perform(get("/invoices/GET Invoices"))
+                .andExpect(status().isAccepted())
+                .andReturn()
+                .response
+                .contentAsString
+        def data = jsonService
+                .convertToInvoices(response)
+                .stream().map(value->value.id).collect(toList())
+
+        return data.get(0)
     }
 
     def "AddInvoice"() {
@@ -62,6 +78,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .response
                 .contentAsString
 
+
         def addedInvoice = mockMvc
                 .perform(get("/invoices/" + addedInvoiceId)
                         .content(invoiceAsJsonWithoutLastSign)
@@ -80,6 +97,14 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     def "GetInvoices"() {
         given:
         def invoice = "Invoice to test"()
+
+        def inviceCheck = mockMvc
+                .perform(get("/invoices/GET Invoices"))
+                .andReturn()
+                .response
+                .contentAsString
+        System.out.println("alla invoices test get invoices" + inviceCheck)
+
         when:
         def response = mockMvc
                 .perform(get("/invoices/GET Invoices"))
@@ -96,9 +121,11 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     def "GetInvoice"() {
         given:
         def invoice = "Invoice to test"()
+        def invoiceNumber = "get invoice number"()
+        invoice.setId(invoiceNumber)
         when:
         def response = mockMvc
-                .perform(get("/invoices/1"))
+                .perform(get("/invoices/" + invoiceNumber))
                 .andExpect(status().isAccepted())
                 .andReturn()
                 .response
@@ -112,12 +139,14 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     def "UpdateInvoice"() {
         given:
         def newInvoice = "Invoice to test"()
+        def invoiceNumber = "get invoice number"()
+        newInvoice.setId(invoiceNumber)
         newInvoice.setDate(LocalDate.now().minusDays(10))
         def newInvoiceAsJson = jsonService.convertToJson(newInvoice)
         when:
         def updatedInvoice = mockMvc
                 .perform(
-                        put("/invoices/update/1")
+                        put("/invoices/update/" + invoiceNumber)
                                 .content(newInvoiceAsJson)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -127,19 +156,21 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .contentAsString
 
         def updatedInvoiceInJson = jsonService.convertToInvoices("[" + updatedInvoice + "]").get(0)
-        updatedInvoiceInJson.id = 1
+
         then:
         updatedInvoiceInJson == newInvoice
     }
 
     def "delete Invoice"() {
         given:
+        def invoiceNumber = "get invoice number"()
         def newInvoice = "Invoice to test"()
+        newInvoice.setId(invoiceNumber)
         newInvoice.setDate(LocalDate.now().minusDays(10))
 //        String invoiceAsJson = jsonService.convertToJson
 
         when:
-        def response = mockMvc.perform(delete("/invoices/delete/1"))
+        def response = mockMvc.perform(delete("/invoices/delete/" + invoiceNumber))
                 .andExpect(status().isAccepted())
                 .andReturn()
                 .response
