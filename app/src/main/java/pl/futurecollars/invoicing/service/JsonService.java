@@ -10,9 +10,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.setup.InvoiceSetup;
 
 @Slf4j
 @Service
@@ -20,12 +18,11 @@ import pl.futurecollars.invoicing.setup.InvoiceSetup;
 public class JsonService {
 
   FileService fileService;
-  IdService idService;
+
   private Path file;
 
-  public JsonService(InvoiceSetup invoiceSetup) {
+  public JsonService() {
     this.fileService = new FileService();
-    this.idService = new IdService(invoiceSetup);
   }
 
   public String convertToJson(Object objectToConvert) {

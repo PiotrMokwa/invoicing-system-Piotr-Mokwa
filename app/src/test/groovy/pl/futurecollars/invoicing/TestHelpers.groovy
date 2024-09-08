@@ -1,6 +1,9 @@
 package pl.futurecollars.invoicing
 
 import lombok.Data
+import org.springframework.test.web.servlet.MockMvc
+import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
+import pl.futurecollars.invoicing.service.JsonService
 import pl.futurecollars.invoicing.setup.InvoiceSetup
 import pl.futurecollars.invoicing.db.file.FileBasedDataBase
 import pl.futurecollars.invoicing.model.Company
@@ -14,6 +17,9 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.time.LocalDate
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+
 @Data
 abstract class TestHelpers extends Specification {
     static String baseTestFile = "DataBaseTest.txt"
@@ -23,8 +29,8 @@ abstract class TestHelpers extends Specification {
 
     static InvoiceSetup invoiceSetup() {
         InvoiceSetup invoiceSetup = new InvoiceSetup(baseTestFile, baseIdTestFile)
-        deleteFilesBase(baseTestFile,baseIdTestFile)
-        createEmptyFilesBase(baseTestFile,baseIdTestFile)
+        deleteFilesBase(baseTestFile, baseIdTestFile)
+        createEmptyFilesBase(baseTestFile, baseIdTestFile)
         return invoiceSetup
     }
 
@@ -55,6 +61,20 @@ abstract class TestHelpers extends Specification {
         return fileBasedDataBase
     }
 
+    static InMemoryDatabase inMemoryDatabase() {
+//        InvoiceSetup invoiceSetup = invoiceSetup()
+        Map<Integer, Invoice> invoices = new HashMap<>()
+        InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(1, invoices)
+        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        invoice1.setId(1)
+        invoice1.setId(2)
+        inMemoryDatabase.save(invoice1)
+        inMemoryDatabase.save(invoice2)
+//        System.out.println(fileBasedDataBase.getAll())
+        return inMemoryDatabase
+    }
+
     static List<Invoice> listOfInvoiceToTest() {
         List<Invoice> listOfTestedInvoice = new LinkedList<>();
         Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
@@ -69,12 +89,12 @@ abstract class TestHelpers extends Specification {
 
     static Company createFirstCompany() {
 
-        return new Company("1111", 300, "Warszawa, street Marynarska")
+        return new Company("1111", "444-444-44-44", "Warszawa, street Marynarska")
     }
 
     static Company createSecondCompany() {
 
-        return new Company("2222", 400, "PoznaĹ„, street Ĺ»eglarska")
+        return new Company("2222", "555-555-55-55", "PoznaĹ„, street Ĺ»eglarska")
     }
 
     static Invoice createFirstInvoice(Company bayer, Company seller) {
@@ -118,6 +138,34 @@ abstract class TestHelpers extends Specification {
         invoiceEntry.setVatValue(vatValue)
         return invoiceEntry
     }
+
+    void "delete all invoices"(MockMvc mockMvc, JsonService jsonService) {
+        def invoiceList = mockMvc.perform(get("/invoices/GET Invoices"))
+                .andReturn()
+                .response
+                .contentAsString
+        int invoiceIndex = 1;
+        if (!invoiceList.isEmpty()) {
+            System.out.println("invoices list before delet: " + invoiceList)
+            System.out.println(invoiceIndex)
+           try{
+                jsonService.convertToInvoices(invoiceList).forEach(invoice -> {
+                    mockMvc.perform(delete("/invoices/delete/" + invoiceIndex ))
+                    invoiceIndex++
+                })
+                }catch(Exception exception){
+               System.out.println(exception)
+               }
+
+           def afterDelete = mockMvc.perform(get("/invoices/GET Invoices"))
+                    .andReturn()
+                    .response
+                    .contentAsString
+            System.out.println("list of invoices after delete: " +afterDelete)
+
+        }
+    }
+
 
 //static boolean isFileBaseExist(){
 //

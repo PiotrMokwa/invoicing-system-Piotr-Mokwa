@@ -1,11 +1,18 @@
 package pl.futurecollars.invoicing.db.memory
+
 import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.model.InvoiceEntry
 import spock.lang.Subject
 import spock.lang.Title
 
+import java.util.function.Function
+import java.util.function.Predicate
+
 @Title("testing InMemoryDataBase")
 class InMemoryDatabaseTest extends TestHelpers {
+
 
     @Subject
     InMemoryDatabase inMemoryDatabase = createInMemoryBase()
@@ -64,7 +71,7 @@ class InMemoryDatabaseTest extends TestHelpers {
         invoice4.id = 1
         when:
         inMemoryDatabase.update(1, invoice4)
-       def  result =  inMemoryDatabase.getById(1)
+        def result = inMemoryDatabase.getById(1)
         then:
         invoice4 == result
     }
@@ -75,10 +82,28 @@ class InMemoryDatabaseTest extends TestHelpers {
         invoice4.buyer.id = "Updated Company"
         invoice4.id = 0
         when:
-        Invoice result =inMemoryDatabase.update(5, invoice4)
+        Invoice result = inMemoryDatabase.update(5, invoice4)
         then:
         result == null
     }
+
+    def "visit"() {
+        when:
+        BigDecimal sum = inMemoryDatabase.visit(Bayer("444-444-44-44"), getVatValue())
+        then:
+        sum == 2.700
+    }
+
+    def "Bayer"(String companyIdNumber) {
+        return (Invoice invoice) -> invoice.getBuyer()
+                .taxIdentyfication == (companyIdNumber)
+
+    }
+
+    def "getVatValue"() {
+        return (InvoiceEntry entry) -> entry.vatValue
+    }
+
 
     def " delete "() {
         when:

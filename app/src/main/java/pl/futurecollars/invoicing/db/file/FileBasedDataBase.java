@@ -1,12 +1,16 @@
 package pl.futurecollars.invoicing.db.file;
 
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.InvoiceEntry;
 import pl.futurecollars.invoicing.service.FileService;
 import pl.futurecollars.invoicing.service.JsonService;
 import pl.futurecollars.invoicing.setup.InvoiceSetup;
@@ -15,16 +19,17 @@ import pl.futurecollars.invoicing.setup.InvoiceSetup;
 @Data
 public class FileBasedDataBase implements Database {
 
-  private IdService invoiceId;
-  private JsonService jsonService;
-  private FileService fileService;
+  public JsonService jsonService;
   private final Path fileBase;
   private final Path fileId;
+  private FileService fileService;
+  private IdService invoiceId;
 
   public FileBasedDataBase(InvoiceSetup invoiceSetup) {
+
     this.fileBase = Path.of(invoiceSetup.getFileBase());
     this.fileId = Path.of(invoiceSetup.getLastIdFilePath());
-    this.jsonService = new JsonService(invoiceSetup);
+    this.jsonService = new JsonService();
     this.fileService = new FileService();
     this.invoiceId = new IdService(invoiceSetup);
   }
@@ -101,5 +106,18 @@ public class FileBasedDataBase implements Database {
     fileService.writeLinesToFile(fileBase, listOfInvoice.stream().map(value -> jsonService.convertToJson(value)).collect(Collectors.toList()));
     log.info("Update !!! Invoice");
     return deletedInvoice;
+  }
+
+  public BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry) {
+
+    return getAll()
+        .stream()
+        .filter(rules)
+        .map(value -> value.getListOfInvoice()
+            .stream()
+            .map(entry)
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+        )
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 }

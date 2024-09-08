@@ -10,12 +10,13 @@ buildscript {
     ext {
 
         lambokVersion = '1.18.34'
-        jacksonVersion = '2.17.2'
+        jacksonVersion = '2.11.1'
         spockSpringVersion = '2.4-M1-groovy-4.0'
-        springVersion = '3.3.2'
+        springVersion = '2.7.9'//Swager work with Spring version below 3.0 0. TODO change Swager to diferent aplication
         springDependencyManagmentVersion = '1.1.6'
         apachGroovyVersion = '4.0.21'
         junitVersion = '4.13.2'
+        springFoxStarterVersion = '3.0.0'
     }
 }
 
@@ -41,8 +42,6 @@ java {
     }
 
 }
-
-
 checkstyle {
     showViolations = true
     ignoreFailures = false
@@ -56,6 +55,7 @@ repositories {
 
 dependencies {
 
+    implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
     // Spring implementation dependencies
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -93,6 +93,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 application {
     // Define the main class for the application.
@@ -141,4 +142,3 @@ def profile = "dev"
 bootRun {
     args = ["--spring.profiles.active=" + profile]
 }
-
