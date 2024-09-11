@@ -1,15 +1,19 @@
 package pl.futurecollars.invoicing.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
+import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
 import pl.futurecollars.invoicing.model.Tax;
+import pl.futurecollars.invoicing.model.TaxValues;
 
 @Slf4j
 @Data
@@ -18,69 +22,153 @@ public class TaxCalculatorService {
 
   private Database dataBase;
   private JsonService jsonService;
+  private Company company;
+  private BigDecimal incomeTaxPercent;
 
   public TaxCalculatorService(Database dataBase) {
+
     this.dataBase = dataBase;
     this.jsonService = new JsonService();
-
+    this.incomeTaxPercent = BigDecimal.valueOf(0.19);
   }
 
-  Predicate<Invoice> isBayer(String companyIdNumber) {
+  Predicate<Invoice> isBayer() {
     log.info("isBayer");
     return (Invoice invoice) ->
-        Objects.equals(invoice.getBuyer().getTaxIdentyfication(), companyIdNumber);
+        Objects.equals(invoice.getBuyer().getTaxIdentyfication(), company.getTaxIdentyfication());
   }
 
-  Predicate<Invoice> isSeller(String companyIdNumber) {
+  Predicate<Invoice> isSeller() {
     log.info("isSeller");
     return (Invoice invoice) ->
-        Objects.equals(invoice.getSeller().getTaxIdentyfication(), companyIdNumber);
+        Objects.equals(invoice.getSeller().getTaxIdentyfication(), company.getTaxIdentyfication());
   }
 
-  public BigDecimal incomingVat(String companyIdNumber) {
+  Function<InvoiceEntry, BigDecimal> getVatIncludingCarForPersonalUse() {
+
+    return value -> {
+      boolean isCarNotNull = !(value.getCar() == null);
+      if (isCarNotNull) {
+        return value.getCar().isPrivateUse()
+            ? value.getVatValue()
+            .divide(BigDecimal.valueOf(2), RoundingMode.HALF_DOWN)
+            : value.getVatValue();
+      } else {
+        return value.getVatValue();
+      }
+    };
+  }
+
+  Function<InvoiceEntry, BigDecimal> getCostsIncludingCarForPersonalUse() {
+
+    return value -> {
+      boolean isCarNotNull = !(value.getCar() == null);
+      if (isCarNotNull) {
+        return value.getCar().isPrivateUse()
+            ? value.getPrice()
+                .add(
+                    value.getVatValue().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))
+                .setScale(2, RoundingMode.HALF_UP)
+            : value.getPrice();
+      } else {
+        return value.getPrice();
+      }
+    };
+  }
+
+  public BigDecimal incomingVat() {
     log.info("incomingVat");
-    return dataBase.visit(isSeller(companyIdNumber), InvoiceEntry::getVatValue);
+    return dataBase.visit(isSeller(), getVatIncludingCarForPersonalUse())
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
-  public BigDecimal outgoingVat(String companyIdNumber) {
+  public BigDecimal outgoingVat() {
     log.info("outgoingVat");
-    return dataBase.visit(isBayer(companyIdNumber), InvoiceEntry::getVatValue);
+    return dataBase.visit(isBayer(), getVatIncludingCarForPersonalUse())
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
-  public BigDecimal income(String companyIdNumber) {
+  public BigDecimal income() {
     log.info("income");
-    return dataBase.visit(isSeller(companyIdNumber), InvoiceEntry::getPrice);
+    return dataBase.visit(isSeller(), InvoiceEntry::getPrice);
   }
 
-  public BigDecimal costs(String companyIdNumber) {
+  public BigDecimal costs() {
     log.info("costs");
-    return dataBase.visit(isBayer(companyIdNumber), InvoiceEntry::getPrice);
+    return dataBase.visit(isBayer(), getCostsIncludingCarForPersonalUse());
   }
 
-  public BigDecimal earnings(String companyIdNumber) {
+  public BigDecimal earnings() {
     log.info("earnings");
-    return income(companyIdNumber).subtract(costs(companyIdNumber));
+    return income().subtract(costs());
   }
 
-  public BigDecimal vatPayment(String companyIdNumber) {
+  public BigDecimal vatPayment() {
     log.info("vatPayment");
-    return incomingVat(companyIdNumber).subtract(outgoingVat(companyIdNumber));
+    return incomingVat().subtract(outgoingVat())
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
-  public Tax tax(String companyIdNumber) {
-    Tax tax = new Tax();
-    tax.setIncomingVat(incomingVat(companyIdNumber));
-    tax.setOutgoingVat(outgoingVat(companyIdNumber));
-    tax.setIncome(income(companyIdNumber));
-    tax.setCosts(costs(companyIdNumber));
-    tax.setEarnings(earnings(companyIdNumber));
-    tax.setVatToPay(vatPayment(companyIdNumber));
-    return tax;
+  public BigDecimal taxCalculationBase() {
+    return income()
+        .subtract(costs())
+        .subtract(company.getInsurance().getPensionInsurance());
+
   }
 
-  public String getTaxInJson(String companyIdNumber) {
-    String tax = jsonService.convertToJson(tax(companyIdNumber));
+  public BigDecimal roundedTaxCalculationBase() {
+    return taxCalculationBase().setScale(0, RoundingMode.UP).setScale(2);
+
+  }
+
+  public BigDecimal incomeTax() {
+    return roundedTaxCalculationBase().multiply(getIncomeTaxPercent()).setScale(2, RoundingMode.UP);
+  }
+
+  public BigDecimal finalIncomeTaxValue() {
+
+    return incomeTax().subtract(company.getInsurance().getAmountOfHealthInsuranceToReduceTax())
+        .setScale(0, RoundingMode.HALF_DOWN).setScale(2);
+  }
+
+  public Tax taxVat() {
+
+    return Tax.builder()
+        .incomingVat(earnings())
+        .outgoingVat(outgoingVat())
+        .income(income())
+        .costs(costs())
+        .earnings(earnings())
+        .vatToPay(vatPayment())
+        .build();
+  }
+
+  public TaxValues getTaxValues() {
+
+    return TaxValues.builder()
+        .income(income())
+        .costs(costs())
+        .incomeSubtractCosts(earnings())
+        .pensionInsurance(company.getInsurance().getPensionInsurance())
+        .taxCalculationBase(taxCalculationBase())
+        .taxCalculationBaseRound(roundedTaxCalculationBase())
+        .incomeTax(incomeTax())
+        .healthInsuranceValue(company.getInsurance().getAmountOfHealthInsurance())
+        .healthInsuranceValueForTax(company.getInsurance().getAmountOfHealthInsuranceToReduceTax())
+        .finalIncomeTaxValue(finalIncomeTaxValue())
+        .build();
+
+  }
+
+  public String getTaxInJson(Company company) {
+    setCompany(company);
+    String tax = jsonService.convertToJson(taxVat());
     return tax.substring(0, tax.length() - 2);
+  }
 
+  public String getTaxValuesInJson(Company company) {
+    setCompany(company);
+    String tax = jsonService.convertToJson(getTaxValues());
+    return tax.substring(0, tax.length() - 2);
   }
 }

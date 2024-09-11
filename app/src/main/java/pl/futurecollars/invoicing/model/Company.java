@@ -17,6 +17,8 @@ public class Company {
   private String taxIdentyfication;
   @ApiModelProperty(value = "Adress", required = true, example = "Berlin, street Leopolda 7")
   private String address;
+  @ApiModelProperty(value = "insurance taxes", required = true)
+  private Insurance insurance;
 
   public Company() {
   }

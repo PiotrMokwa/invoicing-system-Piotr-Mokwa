@@ -15,7 +15,7 @@ public class Invoice {
   private LocalDate date;
   private Company buyer;
   private Company seller;
-  private List<InvoiceEntry> listOfInvoice;
+  private List<InvoiceEntry> listOfInvoiceEntry;
 
   public Invoice() {
   }
@@ -25,6 +25,6 @@ public class Invoice {
     this.date = date;
     this.buyer = buyer;
     this.seller = seller;
-    this.listOfInvoice = listOfInvoice;
+    this.listOfInvoiceEntry = listOfInvoice;
   }
 }
