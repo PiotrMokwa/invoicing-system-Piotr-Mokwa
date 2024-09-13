@@ -5,7 +5,6 @@ import lombok.Data
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Car
-import pl.futurecollars.invoicing.model.Insurance
 import pl.futurecollars.invoicing.service.JsonService
 import pl.futurecollars.invoicing.setup.InvoiceSetup
 import pl.futurecollars.invoicing.db.file.FileBasedDataBase
@@ -108,17 +107,45 @@ abstract class TestHelpers extends Specification {
     }
 
     static Company createFirstCompany() {
+        BigDecimal pensionInsurance = 514.57
+        BigDecimal healthInsuranceBaseValue = 3554.89
+        BigDecimal amountOfHealthInsurance = (healthInsuranceBaseValue * BigDecimal.valueOf(0.09))
+                .setScale(2, RoundingMode.DOWN);
+        BigDecimal amountOfHealthInsuranceToReduceTax = healthInsuranceBaseValue.multiply(BigDecimal.valueOf(0.0775))
+                .setScale(2, RoundingMode.DOWN);
 
-        Insurance insurance = new Insurance(BigDecimal.valueOf(3554.89), BigDecimal.valueOf(514.57))
-
-
-        return new Company("1111", "444-444-44-44", "Warszawa, street Marynarska", insurance)
+        return Company.builder()
+                .id("1111")
+                .taxIdentification("444-444-44-44")
+                .name("ORLEN")
+                .address("Warszawa, street Marynarska")
+                .pensionInsurance(pensionInsurance)
+                .healthInsuranceBaseValue(healthInsuranceBaseValue)
+                .amountOfHealthInsurance(amountOfHealthInsurance)
+                .amountOfHealthInsuranceToReduceTax(amountOfHealthInsuranceToReduceTax)
+                .build()
 
     }
 
     static Company createSecondCompany() {
-        Insurance insurance = new Insurance(BigDecimal.valueOf(3554.89), BigDecimal.valueOf(514.57))
-        return new Company("2222", "555-555-55-55", "PoznaĹ„, street Ĺ»eglarska", insurance)
+        BigDecimal pensionInsurance = 514.57
+        BigDecimal healthInsuranceBaseValue = 3554.89
+        BigDecimal amountOfHealthInsurance = (healthInsuranceBaseValue * BigDecimal.valueOf(0.09))
+                .setScale(2, RoundingMode.DOWN);
+        BigDecimal amountOfHealthInsuranceToReduceTax = (healthInsuranceBaseValue * BigDecimal.valueOf(0.0775))
+                .setScale(2, RoundingMode.DOWN);
+
+        return Company.builder()
+                .id("2222")
+                .taxIdentification("555-555-55-55")
+                .name("PGA")
+                .address("PoznaĹ„, street Ĺ»eglarska")
+                .pensionInsurance(pensionInsurance)
+                .healthInsuranceBaseValue(healthInsuranceBaseValue)
+                .amountOfHealthInsurance(amountOfHealthInsurance)
+                .amountOfHealthInsuranceToReduceTax(amountOfHealthInsuranceToReduceTax)
+                .build()
+
     }
 
     static Invoice createFirstInvoice(Company bayer, Company seller) {

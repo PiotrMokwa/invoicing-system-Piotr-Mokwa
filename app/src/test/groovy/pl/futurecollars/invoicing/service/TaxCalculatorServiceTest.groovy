@@ -14,7 +14,7 @@ class TaxCalculatorServiceTest extends TestHelpers {
 
     def setupSpec() {
         "setupCompany"()
-        taxCalculatorService.company.setTaxIdentyfication("444-444-44-44")
+        taxCalculatorService.company.setTaxIdentification("444-444-44-44")
         "display base"()
     }
 

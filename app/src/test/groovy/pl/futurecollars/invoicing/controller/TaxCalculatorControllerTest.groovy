@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.TaxValues
+import pl.futurecollars.invoicing.service.TaxValues
 import pl.futurecollars.invoicing.service.JsonService
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status

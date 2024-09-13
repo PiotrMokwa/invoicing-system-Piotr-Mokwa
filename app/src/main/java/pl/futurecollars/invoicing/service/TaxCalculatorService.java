@@ -13,7 +13,6 @@ import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
 import pl.futurecollars.invoicing.model.Tax;
-import pl.futurecollars.invoicing.model.TaxValues;
 
 @Slf4j
 @Data
@@ -35,13 +34,13 @@ public class TaxCalculatorService {
   Predicate<Invoice> isBayer() {
     log.info("isBayer");
     return (Invoice invoice) ->
-        Objects.equals(invoice.getBuyer().getTaxIdentyfication(), company.getTaxIdentyfication());
+        Objects.equals(invoice.getBuyer().getTaxIdentification(), company.getTaxIdentification());
   }
 
   Predicate<Invoice> isSeller() {
     log.info("isSeller");
     return (Invoice invoice) ->
-        Objects.equals(invoice.getSeller().getTaxIdentyfication(), company.getTaxIdentyfication());
+        Objects.equals(invoice.getSeller().getTaxIdentification(), company.getTaxIdentification());
   }
 
   Function<InvoiceEntry, BigDecimal> getVatIncludingCarForPersonalUse() {
@@ -112,8 +111,7 @@ public class TaxCalculatorService {
   public BigDecimal taxCalculationBase() {
     return income()
         .subtract(costs())
-        .subtract(company.getInsurance().getPensionInsurance());
-
+        .subtract(company.getPensionInsurance());
   }
 
   public BigDecimal roundedTaxCalculationBase() {
@@ -127,7 +125,7 @@ public class TaxCalculatorService {
 
   public BigDecimal finalIncomeTaxValue() {
 
-    return incomeTax().subtract(company.getInsurance().getAmountOfHealthInsuranceToReduceTax())
+    return incomeTax().subtract(company.getAmountOfHealthInsuranceToReduceTax())
         .setScale(0, RoundingMode.HALF_DOWN).setScale(2);
   }
 
@@ -149,15 +147,14 @@ public class TaxCalculatorService {
         .income(income())
         .costs(costs())
         .incomeSubtractCosts(earnings())
-        .pensionInsurance(company.getInsurance().getPensionInsurance())
+        .pensionInsurance(company.getPensionInsurance())
         .taxCalculationBase(taxCalculationBase())
         .taxCalculationBaseRound(roundedTaxCalculationBase())
         .incomeTax(incomeTax())
-        .healthInsuranceValue(company.getInsurance().getAmountOfHealthInsurance())
-        .healthInsuranceValueForTax(company.getInsurance().getAmountOfHealthInsuranceToReduceTax())
+        .healthInsuranceValue(company.getAmountOfHealthInsurance())
+        .healthInsuranceValueForTax(company.getAmountOfHealthInsuranceToReduceTax())
         .finalIncomeTaxValue(finalIncomeTaxValue())
         .build();
-
   }
 
   public String getTaxInJson(Company company) {

@@ -9,7 +9,6 @@ import spock.lang.Title
 @Title("testing InMemoryDataBase")
 class InMemoryDatabaseTest extends TestHelpers {
 
-
     @Subject
     InMemoryDatabase inMemoryDatabase = createInMemoryBase()
 
@@ -93,7 +92,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def "Bayer"(String companyIdNumber) {
         return (Invoice invoice) -> invoice.getBuyer()
-                .taxIdentyfication == (companyIdNumber)
+                .getTaxIdentification() == (companyIdNumber)
 
     }
 
