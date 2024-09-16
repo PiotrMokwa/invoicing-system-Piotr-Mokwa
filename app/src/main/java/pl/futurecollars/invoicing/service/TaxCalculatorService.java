@@ -46,9 +46,9 @@ public class TaxCalculatorService {
   Function<InvoiceEntry, BigDecimal> getVatIncludingCarForPersonalUse() {
 
     return value -> {
-      boolean isCarNotNull = !(value.getCar() == null);
+      boolean isCarNotNull = !(value.getExpansForCar() == null);
       if (isCarNotNull) {
-        return value.getCar().isPrivateUse()
+        return value.getExpansForCar().isPrivateUse()
             ? value.getVatValue()
             .divide(BigDecimal.valueOf(2), RoundingMode.HALF_DOWN)
             : value.getVatValue();
@@ -61,9 +61,9 @@ public class TaxCalculatorService {
   Function<InvoiceEntry, BigDecimal> getCostsIncludingCarForPersonalUse() {
 
     return value -> {
-      boolean isCarNotNull = !(value.getCar() == null);
+      boolean isCarNotNull = !(value.getExpansForCar() == null);
       if (isCarNotNull) {
-        return value.getCar().isPrivateUse()
+        return value.getExpansForCar().isPrivateUse()
             ? value.getPrice()
                 .add(
                     value.getVatValue().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))
