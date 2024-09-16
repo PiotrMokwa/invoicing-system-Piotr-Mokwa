@@ -27,4 +27,4 @@ spring:
     password: Piotr
     driver-class-name: org.postgresql.Driver
   flyway:
-    enables: false
+    enabled: false
