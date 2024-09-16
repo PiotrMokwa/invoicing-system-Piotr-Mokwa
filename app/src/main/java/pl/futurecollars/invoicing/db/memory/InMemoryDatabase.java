@@ -1,6 +1,7 @@
 package pl.futurecollars.invoicing.db.memory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,11 +60,11 @@ public class InMemoryDatabase implements Database {
     return getAll()
         .stream()
         .filter(rules)
-        .map(value -> value.getListOfInvoice()
+        .map(value -> value.getListOfInvoiceEntry()
             .stream()
             .map(entry)
             .reduce(BigDecimal.ZERO, BigDecimal::add)
         )
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
   }
 }

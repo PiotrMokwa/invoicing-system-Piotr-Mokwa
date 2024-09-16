@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.service
+package pl.futurecollars.invoicing.controller
 
 import org.spockframework.spring.EnableSharedInjection
 import org.springframework.http.MediaType
@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.service.JsonService
 import spock.lang.Shared
 import spock.lang.Stepwise
 import static java.util.stream.Collectors.*;
@@ -183,7 +184,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     def cleanupSpec() {
 
         //Clean File Base
-        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
+        deleteFilesBase(TestHelpers.baseTestFileSpring, TestHelpers.baseIdTestFileSpring)
 
     }
 

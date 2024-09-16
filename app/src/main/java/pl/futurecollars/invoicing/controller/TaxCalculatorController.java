@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.futurecollars.invoicing.model.Company;
+import pl.futurecollars.invoicing.service.JsonService;
 import pl.futurecollars.invoicing.service.TaxCalculatorService;
 
 @Api(tags = {"tax"})
@@ -17,19 +19,19 @@ import pl.futurecollars.invoicing.service.TaxCalculatorService;
 public class TaxCalculatorController implements TaxCalculatorControllerApi {
 
   TaxCalculatorService taxCalculatorService;
+  JsonService jsonService;
 
   TaxCalculatorController(TaxCalculatorService taxCalculatorService) {
     this.taxCalculatorService = taxCalculatorService;
+    this.jsonService = new JsonService();
   }
 
   @Override
-  @GetMapping(value = "/{taxIdentificationNumber}", produces = {"application/json;charset=UTF-8"})
+  @PostMapping(value = "/company", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> tax(
-      @PathVariable("taxIdentificationNumber")
-      @Parameter(name = "taxIdentificationNumber", description = "taxIdentificationNumber", example = "444-444-44-44")
-      String taxIdentificationNumber
-  ) {
-    return Optional.ofNullable(taxCalculatorService.getTaxInJson(taxIdentificationNumber))
+      @Parameter(name = "company", description = "company", example = "company object")
+      @RequestBody Company company) {
+    return Optional.ofNullable(taxCalculatorService.getTaxValuesInJson(company))
         .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }

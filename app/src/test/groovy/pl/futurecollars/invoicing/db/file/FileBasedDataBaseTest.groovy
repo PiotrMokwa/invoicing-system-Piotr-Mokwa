@@ -31,12 +31,12 @@ class FileBasedDataBaseTest extends TestHelpers {
     }
 
 
-
     def "test get by ID from FileBase"() {
 
         given: " create the same invoice as in the base"
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice2.setId(2)
+        invoice2.getListOfInvoiceEntry().get(0).setCar(firstTestCar())
         when: "get By Id"
         Invoice secondInvoiceFromBase = fileBasedDataBase
                 .getById(2)
@@ -46,7 +46,7 @@ class FileBasedDataBaseTest extends TestHelpers {
 
     def "test get all from FileBase true"() {
         given:
-        List<Invoice> listOfTestedInvoice =listOfInvoiceToTest()
+        List<Invoice> listOfTestedInvoice = listOfInvoiceToTest()
         when: "get all"
         List<Invoice> listOfInvoice = fileBasedDataBase.getAll()
         then:
@@ -61,7 +61,7 @@ class FileBasedDataBaseTest extends TestHelpers {
         expect:
         try {
             fileBasedDataBase.getAll().get(0) == null
-        }catch (IndexOutOfBoundsException exception){
+        } catch (IndexOutOfBoundsException exception) {
             exception.printStackTrace()
         }
 
@@ -105,7 +105,7 @@ class FileBasedDataBaseTest extends TestHelpers {
         }
     }
 
-    void cleanup(){
+    void cleanup() {
         "delete files"()
     }
 

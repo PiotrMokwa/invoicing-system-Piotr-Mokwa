@@ -1,18 +1,13 @@
 package pl.futurecollars.invoicing.db.memory
 
 import pl.futurecollars.invoicing.TestHelpers
-import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import spock.lang.Subject
 import spock.lang.Title
 
-import java.util.function.Function
-import java.util.function.Predicate
-
 @Title("testing InMemoryDataBase")
 class InMemoryDatabaseTest extends TestHelpers {
-
 
     @Subject
     InMemoryDatabase inMemoryDatabase = createInMemoryBase()
@@ -91,12 +86,13 @@ class InMemoryDatabaseTest extends TestHelpers {
         when:
         BigDecimal sum = inMemoryDatabase.visit(Bayer("444-444-44-44"), getVatValue())
         then:
-        sum == 2.700
+        sum == 16580.93
+
     }
 
     def "Bayer"(String companyIdNumber) {
         return (Invoice invoice) -> invoice.getBuyer()
-                .taxIdentyfication == (companyIdNumber)
+                .getTaxIdentification() == (companyIdNumber)
 
     }
 

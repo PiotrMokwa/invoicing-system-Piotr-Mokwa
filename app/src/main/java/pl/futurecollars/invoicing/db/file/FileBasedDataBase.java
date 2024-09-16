@@ -113,7 +113,7 @@ public class FileBasedDataBase implements Database {
     return getAll()
         .stream()
         .filter(rules)
-        .map(value -> value.getListOfInvoice()
+        .map(value -> value.getListOfInvoiceEntry()
             .stream()
             .map(entry)
             .reduce(BigDecimal.ZERO, BigDecimal::add)

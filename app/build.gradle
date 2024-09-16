@@ -35,13 +35,14 @@ plugins {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-parameters'
 }
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-
+        languageVersion = JavaLanguageVersion.of(14)
+        vendor = JvmVendorSpec.ADOPTOPENJDK
     }
-
 }
+
 checkstyle {
     showViolations = true
     ignoreFailures = false

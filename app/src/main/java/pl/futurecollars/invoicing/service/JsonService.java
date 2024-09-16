@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
 
 @Slf4j
@@ -17,12 +17,7 @@ import pl.futurecollars.invoicing.model.Invoice;
 @Data
 public class JsonService {
 
-  FileService fileService;
-
-  private Path file;
-
   public JsonService() {
-    this.fileService = new FileService();
   }
 
   public String convertToJson(Object objectToConvert) {
@@ -59,6 +54,24 @@ public class JsonService {
       log.info(exception.toString());
     }
     log.info("Invoice Service convertToInvoices");
+    return objectWithJason;
+  }
+
+  public List<Company> convertToCompany(String company) {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    CollectionType javaType = objectMapper.getTypeFactory()
+        .constructCollectionType(List.class, Company.class);
+    List<Company> objectWithJason = null;
+    try {
+      objectMapper.registerModule(new JavaTimeModule());
+      objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+      objectWithJason = objectMapper.readValue(company, javaType);
+    } catch (IOException exception) {
+      log.info(exception.toString());
+    }
+    log.info("Invoice Service convertToCompany");
     return objectWithJason;
   }
 
