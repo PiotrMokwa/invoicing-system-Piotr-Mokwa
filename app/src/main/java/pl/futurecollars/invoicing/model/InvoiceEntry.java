@@ -12,7 +12,7 @@ public class InvoiceEntry {
 
   @ApiModelProperty(value = "Product/service description", required = true, example = " toner/cleaning windows")
   private String description;
-  @ApiModelProperty(value = "products quantity",required = true,example = "1")
+  @ApiModelProperty(value = "products quantity", required = true, example = "1")
   private BigDecimal quantity;
   @ApiModelProperty(value = "Price value", required = true, example = " 20", dataType = "BigDecimal")
   private BigDecimal price;

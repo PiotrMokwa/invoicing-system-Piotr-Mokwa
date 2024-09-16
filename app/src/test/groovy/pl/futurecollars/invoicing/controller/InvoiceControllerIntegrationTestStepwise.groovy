@@ -12,14 +12,14 @@ import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.service.JsonService
 import spock.lang.Shared
 import spock.lang.Stepwise
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.*
 
 import java.time.LocalDate
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ActiveProfiles("dev")
+@ActiveProfiles("inMemoryBase")
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnableSharedInjection
@@ -40,7 +40,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
 
     Invoice "Invoice to test"() {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        invoice.id = 1;
+        invoice.id = 1
         return invoice
     }
 
@@ -60,11 +60,6 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
 
     def "AddInvoice"() {
         given:
-        def inviceCheck = mockMvc
-                .perform(get("/invoices/GET Invoices"))
-                .andReturn()
-                .response
-                .contentAsString
         def invoice = "Invoice to test"()
 
         def invoiceAsJson = jsonService.convertToJson(invoice)
@@ -184,7 +179,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     def cleanupSpec() {
 
         //Clean File Base
-        deleteFilesBase(TestHelpers.baseTestFileSpring, TestHelpers.baseIdTestFileSpring)
+        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
 
     }
 
