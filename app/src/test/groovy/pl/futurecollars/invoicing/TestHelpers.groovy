@@ -59,8 +59,8 @@ abstract class TestHelpers extends Specification {
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice1.setId(1)
         invoice2.setId(2)
-        invoice1.getListOfInvoiceEntry().get(0).setCar(firstTestCar())
-        invoice2.getListOfInvoiceEntry().get(0).setCar(firstTestCar())
+        invoice1.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
+        invoice2.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
         fileBasedDataBase.save(invoice1)
         fileBasedDataBase.save(invoice2)
         return fileBasedDataBase
@@ -85,8 +85,8 @@ abstract class TestHelpers extends Specification {
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice1.setId(1)
         invoice2.setId(2)
-        invoice1.getListOfInvoiceEntry().get(0).setCar(firstTestCar())
-        invoice2.getListOfInvoiceEntry().get(0).setCar(firstTestCar())
+        invoice1.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
+        invoice2.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
         listOfTestedInvoice.add(invoice1)
         listOfTestedInvoice.add(invoice2)
         return listOfTestedInvoice
@@ -202,7 +202,7 @@ abstract class TestHelpers extends Specification {
         invoiceEntry.setPrice(price)
         invoiceEntry.setVatRate(Vat.vat_8)
         invoiceEntry.setVatValue(vatValue)
-        invoiceEntry.setCar(secondTestCar())
+        invoiceEntry.setExpansForCar(secondTestCar())
         return invoiceEntry
     }
 
@@ -228,7 +228,7 @@ abstract class TestHelpers extends Specification {
                 .contentAsString
         int invoiceIndex = 1;
         if (!invoiceList.isEmpty()) {
-            System.out.println("invoices list before delet: " + invoiceList)
+            System.out.println("invoices list before delete: " + invoiceList)
             System.out.println(invoiceIndex)
             try {
                 jsonService.convertToInvoices(invoiceList).forEach(invoice -> {

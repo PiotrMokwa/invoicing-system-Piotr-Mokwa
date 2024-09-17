@@ -36,7 +36,7 @@ class FileBasedDataBaseTest extends TestHelpers {
         given: " create the same invoice as in the base"
         Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
         invoice2.setId(2)
-        invoice2.getListOfInvoiceEntry().get(0).setCar(firstTestCar())
+        invoice2.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
         when: "get By Id"
         Invoice secondInvoiceFromBase = fileBasedDataBase
                 .getById(2)

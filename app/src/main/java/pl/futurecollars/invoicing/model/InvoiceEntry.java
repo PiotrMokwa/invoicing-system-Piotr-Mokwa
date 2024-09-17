@@ -12,6 +12,8 @@ public class InvoiceEntry {
 
   @ApiModelProperty(value = "Product/service description", required = true, example = " toner/cleaning windows")
   private String description;
+  @ApiModelProperty(value = "products quantity", required = true, example = "1")
+  private BigDecimal quantity;
   @ApiModelProperty(value = "Price value", required = true, example = " 20", dataType = "BigDecimal")
   private BigDecimal price;
   @ApiModelProperty(value = "Price value", required = true, example = " 20")
@@ -19,7 +21,7 @@ public class InvoiceEntry {
   @ApiModelProperty(value = "Vat tax rate", required = true)
   private Vat vatRate;
   @ApiModelProperty(value = "car data", required = true)
-  private Car car;
+  private Car expansForCar;
 
 
 }

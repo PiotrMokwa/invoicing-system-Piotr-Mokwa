@@ -12,11 +12,13 @@ buildscript {
         lambokVersion = '1.18.34'
         jacksonVersion = '2.11.1'
         spockSpringVersion = '2.4-M1-groovy-4.0'
-        springVersion = '2.7.9'//Swager work with Spring version below 3.0 0. TODO change Swager to diferent aplication
+        springVersion = '2.7.9' //Swager work with Spring version below 3.0 0. TODO change Swager to diferent aplication
         springDependencyManagmentVersion = '1.1.6'
         apachGroovyVersion = '4.0.21'
         junitVersion = '4.13.2'
         springFoxStarterVersion = '3.0.0'
+        springFoxUiVersion = '3.0.0'
+        flywayVersion = '10.15.2'
     }
 }
 
@@ -55,6 +57,20 @@ repositories {
 }
 
 dependencies {
+// SQLDatabase
+    implementation "org.springframework.boot:spring-boot-starter-web"
+
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
+
+    implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
+
+    implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
+
+    implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
+
+    runtimeOnly 'org.postgresql:postgresql:42.7.3'
+
+    implementation 'org.flywaydb:flyway-core:8.5.13'
 
     implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
     // Spring implementation dependencies
@@ -143,3 +159,19 @@ def profile = "dev"
 bootRun {
     args = ["--spring.profiles.active=" + profile]
 }
+
+task testWithFileDatabase(type:Test){
+    systemProperty 'spring.profiles.active','fileBase'
+}
+
+task testWithInMemoryDatabase(type:Test){
+    systemProperty 'spring.profiles.active','inMemoryBase'
+}
+
+task testWithSQLDatabase(type:Test){
+    systemProperty 'spring.profiles.active','SQLBase'
+}
+
+check.dependsOn(testWithFileDatabase)
+check.dependsOn(testWithInMemoryDatabase)
+//check.dependsOn(testWithSQLDatabase)

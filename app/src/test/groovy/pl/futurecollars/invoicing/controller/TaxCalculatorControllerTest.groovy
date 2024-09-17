@@ -13,7 +13,7 @@ import pl.futurecollars.invoicing.service.JsonService
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ActiveProfiles("dev")
+@ActiveProfiles("inMemoryBase")
 @SpringBootTest
 @AutoConfigureMockMvc
 class TaxCalculatorControllerTest extends TestHelpers {

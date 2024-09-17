@@ -30,8 +30,8 @@ class TaxCalculatorServiceTest extends TestHelpers {
                             .forEach(value -> {
                                 System.out.println("Price " + value.getPrice())
                                 System.out.println("Vat Value " + value.getVatValue())
-                                if (!(value.getCar() == null)) {
-                                    System.out.println("Car Private use " + value.getCar().privateUse)
+                                if (!(value.getExpansForCar() == null)) {
+                                    System.out.println("Car Private use " + value.getExpansForCar().privateUse)
                                 } else {
                                     System.out.println("Car empty")
                                 }
@@ -45,7 +45,6 @@ class TaxCalculatorServiceTest extends TestHelpers {
         taxCalculatorService.setCompany(createFirstCompany())
 
     }
-
 
     def "test isBayer"() {
         given:

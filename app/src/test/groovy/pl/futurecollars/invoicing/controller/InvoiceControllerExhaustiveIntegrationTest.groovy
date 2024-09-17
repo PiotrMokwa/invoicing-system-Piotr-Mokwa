@@ -16,7 +16,7 @@ import java.time.LocalDate
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ActiveProfiles("prod")
+@ActiveProfiles("inMemoryBase")
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnableSharedInjection
@@ -35,21 +35,21 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
 
     Invoice "Invoice nr1"() {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        invoice.id = 1;
+        invoice.id = 1
         invoice.date = LocalDate.now().minusDays(1)
         return invoice
     }
 
     Invoice "Invoice nr2"() {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        invoice.id = 2;
+        invoice.id = 2
         invoice.date = LocalDate.now().minusDays(2)
         return invoice
     }
 
     Invoice "Invoice nr3"() {
         def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        invoice.id = 3;
+        invoice.id = 3
         invoice.date = LocalDate.now().minusDays(3)
         return invoice
     }
