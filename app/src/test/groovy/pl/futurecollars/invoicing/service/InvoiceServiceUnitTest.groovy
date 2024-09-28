@@ -80,7 +80,7 @@ class InvoiceServiceUnitTest extends TestHelpers {
         setup: " moc dataBase"
         def dataBase = Mock(Database)
         InvoiceService invoiceService = new InvoiceService(dataBase)
-        def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        def invoice = createFirstInvoice()
         dataBase.delete(1) >> invoice
         when: " delate invoice"
         def result = invoiceService.delete(1)

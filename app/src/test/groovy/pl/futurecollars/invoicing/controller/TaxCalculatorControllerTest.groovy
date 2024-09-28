@@ -29,8 +29,8 @@ class TaxCalculatorControllerTest extends TestHelpers {
     }
 
     def "add invoices to base"() {
-        Invoice invoice1 = createFirstInvoice(createSecondCompany(), createFirstCompany())
-        Invoice invoice2 = createSecondInvoice(createFirstCompany(), createSecondCompany())
+        Invoice invoice1 = createFirstInvoice()
+        Invoice invoice2 = createSecondInvoice()
         invoice1.setId(1)
         invoice1.setId(2)
         String invoiceInJson1 = jsonService.convertToJson(invoice1)

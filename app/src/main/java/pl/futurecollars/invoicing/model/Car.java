@@ -1,11 +1,15 @@
 package pl.futurecollars.invoicing.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Service;
+import lombok.NoArgsConstructor;
 
-@Service
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
+@Builder
 public class Car {
 
   @ApiModelProperty(value = "is car for private use", required = true, example = "true")

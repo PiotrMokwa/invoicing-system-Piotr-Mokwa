@@ -15,8 +15,8 @@ class InMemoryDatabaseTest extends TestHelpers {
     static createInMemoryBase() {
         Map<Integer, Invoice> invoices = new HashMap<>()
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(1, invoices)
-        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice1 = createFirstInvoice()
+        Invoice invoice2 = createSecondInvoice()
         inMemoryDatabase.save(invoice1)
         inMemoryDatabase.save(invoice2)
         return inMemoryDatabase
@@ -24,8 +24,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def " test save invoice Positive"() {
         given:
-        Invoice thirdInvoice = createFirstInvoice(
-                createFirstCompany(), createSecondCompany())
+        Invoice thirdInvoice = createFirstInvoice()
         when:
         def result = inMemoryDatabase.save(thirdInvoice)
         then:
@@ -35,7 +34,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def " get by ID"() {
         given:
-        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        Invoice invoice1 = createFirstInvoice()
         invoice1.id = 1
         when:
         Invoice result = inMemoryDatabase.getById(1)
@@ -46,8 +45,8 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def " get all "() {
         given:
-        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice1 = createFirstInvoice()
+        Invoice invoice2 = createSecondInvoice()
         invoice1.id = 1
         invoice2.id = 2
         List<Invoice> listOfInvoices = new ArrayList<>()
@@ -61,7 +60,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def " update True"() {
         given:
-        Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice4 = createSecondInvoice()
         invoice4.buyer.id = "Updated Company"
         invoice4.id = 1
         when:
@@ -73,7 +72,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def " update False"() {
         given:
-        Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice4 = createSecondInvoice()
         invoice4.buyer.id = "Updated Company"
         invoice4.id = 0
         when:
@@ -86,7 +85,7 @@ class InMemoryDatabaseTest extends TestHelpers {
         when:
         BigDecimal sum = inMemoryDatabase.visit(Bayer("444-444-44-44"), getVatValue())
         then:
-        sum == 16580.93
+        sum == 906.36
 
     }
 

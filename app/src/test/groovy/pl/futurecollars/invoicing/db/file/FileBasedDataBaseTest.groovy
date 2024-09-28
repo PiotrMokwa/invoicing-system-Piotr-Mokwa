@@ -20,7 +20,9 @@ class FileBasedDataBaseTest extends TestHelpers {
     def "test save to FileBase true "() {
 
         given: " create third invoice in FileBase"
-        Invoice thirdInvoice = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice thirdInvoice = createSecondInvoice()
+        thirdInvoice.getSeller().setId(null)
+        thirdInvoice.getBuyer().setId(null)
         thirdInvoice.setId(3)
         when: "save"
         fileBasedDataBase.save(thirdInvoice)
@@ -34,7 +36,9 @@ class FileBasedDataBaseTest extends TestHelpers {
     def "test get by ID from FileBase"() {
 
         given: " create the same invoice as in the base"
-        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice2 = createSecondInvoice()
+        invoice2.getBuyer().setId(null)
+        invoice2.getSeller().setId(null)
         invoice2.setId(2)
         invoice2.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
         when: "get By Id"
@@ -70,8 +74,8 @@ class FileBasedDataBaseTest extends TestHelpers {
     def "test update FileBase_Existing_Invoice"() {
 
         given: "createne new invoice"
-        Invoice invoice4 = createSecondInvoice(createSecondCompany(), createFirstCompany())
-        invoice4.buyer.id = "Updated Company"
+        Invoice invoice4 = createSecondInvoice()
+        invoice4.buyer.taxIdentification = "Updated Company"
         invoice4.id = 1
         when: "update invoice in base with new invoice"
         fileBasedDataBase.update(1, invoice4)

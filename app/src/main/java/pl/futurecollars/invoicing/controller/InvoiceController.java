@@ -41,14 +41,14 @@ public class InvoiceController {
   @GetMapping(value = "GET Invoices", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> getInvoices() {
     return Optional.ofNullable(invoiceService.getAll())
-        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceService.getAll()))
+        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
   @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> getInvoice(@PathVariable("id") @Parameter(name = "id", description = "id", example = "1") int id) {
     return Optional.ofNullable(invoiceService.getById(id))
-        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceService.getById(id)))
+        .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
@@ -56,7 +56,7 @@ public class InvoiceController {
   public ResponseEntity<?> updateInvoice(
       @PathVariable("id") @Parameter(name = "id", description = "id", example = "1") int id, @RequestBody Invoice newInvocie) {
     return Optional.ofNullable(invoiceService.update(id, newInvocie))
-        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.update(id, newInvocie)))
+        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 

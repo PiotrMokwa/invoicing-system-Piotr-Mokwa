@@ -12,5 +12,4 @@ INSERT INTO public.vat (name,vat_value)
             ('vat_5',5),
             ('vat_0',0);
 
-ALTER TABLE public.vat
-    OWNER to postgres
+

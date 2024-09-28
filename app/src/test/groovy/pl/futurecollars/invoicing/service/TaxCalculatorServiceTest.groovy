@@ -48,7 +48,7 @@ class TaxCalculatorServiceTest extends TestHelpers {
 
     def "test isBayer"() {
         given:
-        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        Invoice invoice1 = createSecondInvoice()
 
         when:
         boolean result = taxCalculatorService.isBayer().test(invoice1)
@@ -58,7 +58,7 @@ class TaxCalculatorServiceTest extends TestHelpers {
 
     def "test isSeller"() {
         given:
-        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice2 = createFirstInvoice()
         when:
         boolean result = taxCalculatorService.isSeller().test(invoice2)
         then:

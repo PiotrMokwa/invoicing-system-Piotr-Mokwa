@@ -39,7 +39,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
     }
 
     Invoice "Invoice to test"() {
-        def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        def invoice = createFirstInvoice()
         invoice.id = 1
         return invoice
     }
@@ -51,6 +51,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .andReturn()
                 .response
                 .contentAsString
+        System.out.println(response)
         def data = jsonService
                 .convertToInvoices(response)
                 .stream().map(value->value.id).collect(toList())
@@ -140,7 +141,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
         newInvoice.setDate(LocalDate.now().minusDays(10))
         def newInvoiceAsJson = jsonService.convertToJson(newInvoice)
         when:
-        def updatedInvoice = mockMvc
+        def oldInvoice = mockMvc
                 .perform(
                         put("/invoices/update/" + invoiceNumber)
                                 .content(newInvoiceAsJson)
@@ -151,6 +152,12 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .response
                 .contentAsString
 
+        def updatedInvoice = mockMvc
+                .perform(get("/invoices/" + invoiceNumber))
+                .andExpect(status().isAccepted())
+                .andReturn()
+                .response
+                .contentAsString
         def updatedInvoiceInJson = jsonService.convertToInvoices("[" + updatedInvoice + "]").get(0)
 
         then:
