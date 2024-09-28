@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.Tax;
 
 @Slf4j
 @Service
@@ -68,6 +69,24 @@ public class JsonService {
       objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
       objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
       objectWithJason = objectMapper.readValue(company, javaType);
+    } catch (IOException exception) {
+      log.info(exception.toString());
+    }
+    log.info("Invoice Service convertToCompany");
+    return objectWithJason;
+  }
+
+  public List<Tax> convertToTax(String tax) {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    CollectionType javaType = objectMapper.getTypeFactory()
+        .constructCollectionType(List.class, Tax.class);
+    List<Tax> objectWithJason = null;
+    try {
+      objectMapper.registerModule(new JavaTimeModule());
+      objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+      objectWithJason = objectMapper.readValue(tax, javaType);
     } catch (IOException exception) {
       log.info(exception.toString());
     }

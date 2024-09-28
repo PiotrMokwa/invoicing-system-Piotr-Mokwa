@@ -5,6 +5,7 @@ import lombok.Data
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Car
+import pl.futurecollars.invoicing.model.Tax
 import pl.futurecollars.invoicing.service.JsonService
 import pl.futurecollars.invoicing.setup.InvoiceSetup
 import pl.futurecollars.invoicing.db.file.FileBasedDataBase
@@ -271,4 +272,15 @@ abstract class TestHelpers extends Specification {
         }
     }
 
+    Tax getTaxVatToTest() {
+        return Tax.builder()
+                .incomingVat(BigDecimal.valueOf(16580.93).setScale(2))
+                .outgoingVat(BigDecimal.valueOf(506.36).setScale(2))
+                .income(BigDecimal.valueOf(76011.62).setScale(2))
+                .costs(BigDecimal.valueOf(11729.47).setScale(2))
+                .earnings(BigDecimal.valueOf(64282.15).setScale(2))
+                .vatToPay(BigDecimal.valueOf(16074.57).setScale(2))
+                .roundedTaxCalculationBase(BigDecimal.valueOf(63768).setScale(2))
+                .build()
+    }
 }

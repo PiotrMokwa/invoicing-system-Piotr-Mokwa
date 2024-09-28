@@ -132,12 +132,13 @@ public class TaxCalculatorService {
   public Tax taxVat() {
 
     return Tax.builder()
-        .incomingVat(earnings())
+        .incomingVat(incomingVat())
         .outgoingVat(outgoingVat())
         .income(income())
         .costs(costs())
         .earnings(earnings())
         .vatToPay(vatPayment())
+        .roundedTaxCalculationBase(roundedTaxCalculationBase())
         .build();
   }
 

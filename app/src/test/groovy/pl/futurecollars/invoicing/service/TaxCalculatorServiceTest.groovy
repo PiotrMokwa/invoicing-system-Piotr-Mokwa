@@ -141,5 +141,19 @@ class TaxCalculatorServiceTest extends TestHelpers {
         then:
         result == 11840.00
     }
+def "test get taxInJson"(){
+        given:
+        def jsonService = new JsonService()
+        when:
+       def taxInJson = taxCalculatorService.getTaxInJson(createFirstCompany())
+        System.out.println(taxInJson)
+        def taxInTaxClass =  jsonService.convertToTax(
+                "[" +taxInJson + "]").get(0)
+        then:
+        taxInTaxClass == getTaxVatToTest()
+
+    }
+
 
 }
+
