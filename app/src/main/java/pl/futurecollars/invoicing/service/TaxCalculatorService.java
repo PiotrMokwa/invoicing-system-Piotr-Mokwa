@@ -101,7 +101,7 @@ public class TaxCalculatorService {
   }
 
   public BigDecimal roundedTaxCalculationBase() {
-    return taxCalculationBase().setScale(2, RoundingMode.UP);
+    return taxCalculationBase().setScale(0, RoundingMode.UP).setScale(2);
 
   }
 
@@ -112,7 +112,7 @@ public class TaxCalculatorService {
   public BigDecimal finalIncomeTaxValue() {
 
     return incomeTax().subtract(company.getAmountOfHealthInsuranceToReduceTax())
-        .setScale(2, RoundingMode.HALF_DOWN);
+        .setScale(0, RoundingMode.HALF_DOWN).setScale(2);
   }
 
   public Tax taxVat() {
