@@ -45,34 +45,20 @@ public class TaxCalculatorService {
 
   Function<InvoiceEntry, BigDecimal> getVatIncludingCarForPersonalUse() {
 
-    return value -> {
-      boolean isCarNotNull = !(value.getExpansForCar() == null);
-      if (isCarNotNull) {
-        return value.getExpansForCar().isPrivateUse()
-            ? value.getVatValue()
-            .divide(BigDecimal.valueOf(2), RoundingMode.HALF_DOWN)
-            : value.getVatValue();
-      } else {
-        return value.getVatValue();
-      }
-    };
+    return value -> value.getExpansForCar().isPrivateUse()
+        ? value.getVatValue()
+        .divide(BigDecimal.valueOf(2), RoundingMode.HALF_DOWN)
+        : value.getVatValue();
   }
 
   Function<InvoiceEntry, BigDecimal> getCostsIncludingCarForPersonalUse() {
 
-    return value -> {
-      boolean isCarNotNull = !(value.getExpansForCar() == null);
-      if (isCarNotNull) {
-        return value.getExpansForCar().isPrivateUse()
+    return value -> value.getExpansForCar().isPrivateUse()
             ? value.getPrice()
                 .add(
                     value.getVatValue().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))
                 .setScale(2, RoundingMode.HALF_UP)
             : value.getPrice();
-      } else {
-        return value.getPrice();
-      }
-    };
   }
 
   public BigDecimal incomingVat() {
@@ -115,7 +101,7 @@ public class TaxCalculatorService {
   }
 
   public BigDecimal roundedTaxCalculationBase() {
-    return taxCalculationBase().setScale(0, RoundingMode.UP).setScale(2);
+    return taxCalculationBase().setScale(2, RoundingMode.UP);
 
   }
 
@@ -126,7 +112,7 @@ public class TaxCalculatorService {
   public BigDecimal finalIncomeTaxValue() {
 
     return incomeTax().subtract(company.getAmountOfHealthInsuranceToReduceTax())
-        .setScale(0, RoundingMode.HALF_DOWN).setScale(2);
+        .setScale(2, RoundingMode.HALF_DOWN);
   }
 
   public Tax taxVat() {
