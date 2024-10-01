@@ -3,10 +3,12 @@ package pl.futurecollars.invoicing.model;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Service;
 
-@Service
+@Builder
+@AllArgsConstructor
 @Data
 public class Invoice {
 

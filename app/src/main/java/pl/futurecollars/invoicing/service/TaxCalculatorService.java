@@ -45,34 +45,20 @@ public class TaxCalculatorService {
 
   Function<InvoiceEntry, BigDecimal> getVatIncludingCarForPersonalUse() {
 
-    return value -> {
-      boolean isCarNotNull = !(value.getExpansForCar() == null);
-      if (isCarNotNull) {
-        return value.getExpansForCar().isPrivateUse()
-            ? value.getVatValue()
-            .divide(BigDecimal.valueOf(2), RoundingMode.HALF_DOWN)
-            : value.getVatValue();
-      } else {
-        return value.getVatValue();
-      }
-    };
+    return value -> value.getExpansForCar().isPrivateUse()
+        ? value.getVatValue()
+        .divide(BigDecimal.valueOf(2), RoundingMode.HALF_DOWN)
+        : value.getVatValue();
   }
 
   Function<InvoiceEntry, BigDecimal> getCostsIncludingCarForPersonalUse() {
 
-    return value -> {
-      boolean isCarNotNull = !(value.getExpansForCar() == null);
-      if (isCarNotNull) {
-        return value.getExpansForCar().isPrivateUse()
+    return value -> value.getExpansForCar().isPrivateUse()
             ? value.getPrice()
                 .add(
                     value.getVatValue().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))
                 .setScale(2, RoundingMode.HALF_UP)
             : value.getPrice();
-      } else {
-        return value.getPrice();
-      }
-    };
   }
 
   public BigDecimal incomingVat() {
@@ -132,12 +118,13 @@ public class TaxCalculatorService {
   public Tax taxVat() {
 
     return Tax.builder()
-        .incomingVat(earnings())
+        .incomingVat(incomingVat())
         .outgoingVat(outgoingVat())
         .income(income())
         .costs(costs())
         .earnings(earnings())
         .vatToPay(vatPayment())
+        .roundedTaxCalculationBase(roundedTaxCalculationBase())
         .build();
   }
 

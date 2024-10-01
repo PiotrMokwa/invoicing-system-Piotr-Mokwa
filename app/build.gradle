@@ -90,6 +90,8 @@ dependencies {
 
 //     Use the awesome Spock testing and specification framework even with Java
     testImplementation 'junit:junit:4.13.2'
+//sql base test
+    testImplementation 'com.h2database:h2:2.1.210'
 
     compileOnly "org.projectlombok:lombok:${lambokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lambokVersion}"

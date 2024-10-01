@@ -5,6 +5,7 @@ import lombok.Data
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Car
+import pl.futurecollars.invoicing.model.Tax
 import pl.futurecollars.invoicing.service.JsonService
 import pl.futurecollars.invoicing.setup.InvoiceSetup
 import pl.futurecollars.invoicing.db.file.FileBasedDataBase
@@ -13,7 +14,6 @@ import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
 import spock.lang.Specification
-
 import java.math.RoundingMode
 import java.nio.file.Files
 import java.nio.file.Path
@@ -55,8 +55,8 @@ abstract class TestHelpers extends Specification {
     static FileBasedDataBase createFileBase() {
         InvoiceSetup invoiceSetup = invoiceSetup()
         FileBasedDataBase fileBasedDataBase = new FileBasedDataBase(invoiceSetup)
-        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice1 = createFirstInvoice()
+        Invoice invoice2 = createSecondInvoice()
         invoice1.setId(1)
         invoice2.setId(2)
         invoice1.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
@@ -70,8 +70,8 @@ abstract class TestHelpers extends Specification {
 
         Map<Integer, Invoice> invoices = new HashMap<>()
         InMemoryDatabase inMemoryDatabase = new InMemoryDatabase(1, invoices)
-        Invoice invoice1 = createFirstInvoice(createSecondCompany(), createFirstCompany())
-        Invoice invoice2 = createSecondInvoice(createFirstCompany(), createSecondCompany())
+        Invoice invoice1 = createFirstInvoice()
+        Invoice invoice2 = createSecondInvoice()
         invoice1.setId(1)
         invoice1.setId(2)
         inMemoryDatabase.save(invoice1)
@@ -81,8 +81,8 @@ abstract class TestHelpers extends Specification {
 
     static List<Invoice> listOfInvoiceToTest() {
         List<Invoice> listOfTestedInvoice = new LinkedList<>();
-        Invoice invoice1 = createFirstInvoice(createFirstCompany(), createSecondCompany())
-        Invoice invoice2 = createSecondInvoice(createSecondCompany(), createFirstCompany())
+        Invoice invoice1 = createFirstInvoice()
+        Invoice invoice2 = createSecondInvoice()
         invoice1.setId(1)
         invoice2.setId(2)
         invoice1.getListOfInvoiceEntry().get(0).setExpansForCar(firstTestCar())
@@ -93,17 +93,19 @@ abstract class TestHelpers extends Specification {
     }
 
     static Car firstTestCar() {
-        Car car = new Car()
-        car.setCarRegistrationNumber("KR 4523")
-        car.setPrivateUse(false)
-        return car
+
+        return Car.builder()
+                .isPrivateUse(false)
+                .carRegistrationNumber("KR 4523")
+                .build()
     }
 
     static Car secondTestCar() {
-        Car car = new Car()
-        car.setCarRegistrationNumber("BKK 4523")
-        car.setPrivateUse(true)
-        return car
+
+        return Car.builder()
+                .isPrivateUse(true)
+                .carRegistrationNumber("BKK 4523")
+                .build()
     }
 
     static Company createFirstCompany() {
@@ -115,7 +117,7 @@ abstract class TestHelpers extends Specification {
                 .setScale(2, RoundingMode.DOWN);
 
         return Company.builder()
-                .id("1111")
+                .id(null)
                 .taxIdentification("444-444-44-44")
                 .name("ORLEN")
                 .address("Warszawa, street Marynarska")
@@ -136,10 +138,10 @@ abstract class TestHelpers extends Specification {
                 .setScale(2, RoundingMode.DOWN);
 
         return Company.builder()
-                .id("2222")
+                .id(null)
                 .taxIdentification("555-555-55-55")
                 .name("PGA")
-                .address("PoznaĹ„, street Ĺ»eglarska")
+                .address("Poznan, streeet Wesola")
                 .pensionInsurance(pensionInsurance)
                 .healthInsuranceBaseValue(healthInsuranceBaseValue)
                 .amountOfHealthInsurance(amountOfHealthInsurance)
@@ -148,76 +150,98 @@ abstract class TestHelpers extends Specification {
 
     }
 
-    static Invoice createFirstInvoice(Company bayer, Company seller) {
+    static Invoice createFirstInvoice() {
 
         List<InvoiceEntry> itemsList = new ArrayList<>()
         itemsList.add(createFirstInvoiceEntry())
         itemsList.add(createSecondInvoiceEntry())
-        return new Invoice(LocalDate.now(), bayer, seller, itemsList)
+        return Invoice.builder()
+                .number("PM/2020/01/01/001")
+                .date(LocalDate.now())
+                .seller(createFirstCompany())
+                .buyer(createSecondCompany())
+                .listOfInvoiceEntry(itemsList)
+                .build()
+
     }
 
-    static Invoice createSecondInvoice(Company bayer, Company seller) {
+    static Invoice createSecondInvoice() {
 
         List<InvoiceEntry> itemsList = new ArrayList<>()
         itemsList.add(createThirdInvoiceEntry())
         itemsList.add(createForthInvoiceEntry())
-        return new Invoice(LocalDate.now(), bayer, seller, itemsList)
+        return Invoice.builder()
+                .number("PM/2020/01/01/002")
+                .date(LocalDate.now())
+                .seller(createSecondCompany())
+                .buyer(createFirstCompany())
+                .listOfInvoiceEntry(itemsList)
+                .build()
     }
 
     static InvoiceEntry createFirstInvoiceEntry() {
 
-        InvoiceEntry invoiceEntry = new InvoiceEntry()
-        invoiceEntry.setDescription("Ream of paper")
-        BigDecimal price = BigDecimal.valueOf(70000.00)
+        BigDecimal quantity = BigDecimal.ONE
+        BigDecimal price = BigDecimal.valueOf(70000.00).setScale(2)
         Vat vatRate = Vat.vat_23
-        BigDecimal vatValue = price * vatRate.getVatValue().setScale(2, RoundingMode.UP)
-        invoiceEntry.setPrice(price)
-        invoiceEntry.setVatRate(Vat.vat_23)
-        invoiceEntry.setVatValue(vatValue)
+        BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
+        return InvoiceEntry.builder()
+                .description("Ream of paper")
+                .quantity(quantity)
+                .price(price)
+                .vatRate(vatRate)
+                .vatValue(vatValue)
+                .expansForCar(firstTestCar())
+                .build()
 
-        return invoiceEntry
     }
 
     static InvoiceEntry createSecondInvoiceEntry() {
 
-        InvoiceEntry invoiceEntry = new InvoiceEntry()
-        invoiceEntry.setDescription("Toner")
+        BigDecimal quantity = BigDecimal.ONE
         BigDecimal price = BigDecimal.valueOf(6011.62)
         Vat vatRate = Vat.vat_8
-        BigDecimal vatValue = price * vatRate.getVatValue().setScale(2, RoundingMode.UP)
-        invoiceEntry.setPrice(price)
-        invoiceEntry.setVatRate(Vat.vat_8)
-        invoiceEntry.setVatValue(vatValue)
-
-        return invoiceEntry
+        BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
+        return InvoiceEntry.builder()
+                .description("Toner")
+                .quantity(quantity)
+                .price(price)
+                .vatRate(vatRate)
+                .vatValue(vatValue)
+                .expansForCar(firstTestCar())
+                .build()
     }
 
     static InvoiceEntry createThirdInvoiceEntry() {
 
-        InvoiceEntry invoiceEntry = new InvoiceEntry()
-        invoiceEntry.setDescription("Toner")
-        BigDecimal price = BigDecimal.valueOf(10000.00)
+        BigDecimal quantity = BigDecimal.ONE
+        BigDecimal price = BigDecimal.valueOf(10000.00).setScale(2)
         Vat vatRate = Vat.vat_8
-        BigDecimal vatValue = price * vatRate.getVatValue().setScale(2, RoundingMode.UP)
-        invoiceEntry.setPrice(price)
-        invoiceEntry.setVatRate(Vat.vat_8)
-        invoiceEntry.setVatValue(vatValue)
-        invoiceEntry.setExpansForCar(secondTestCar())
-        return invoiceEntry
+        BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
+        return InvoiceEntry.builder()
+                .description("Toner")
+                .quantity(quantity)
+                .price(price)
+                .vatRate(vatRate)
+                .vatValue(vatValue)
+                .expansForCar(secondTestCar())
+                .build()
     }
 
     static InvoiceEntry createForthInvoiceEntry() {
 
-        InvoiceEntry invoiceEntry = new InvoiceEntry()
-        invoiceEntry.setDescription("Toner")
+        BigDecimal quantity = BigDecimal.ONE
         BigDecimal price = BigDecimal.valueOf(1329.47)
         Vat vatRate = Vat.vat_8
-        BigDecimal vatValue = price * vatRate.getVatValue().setScale(2, RoundingMode.UP)
-        invoiceEntry.setPrice(price)
-        invoiceEntry.setVatRate(Vat.vat_8)
-        invoiceEntry.setVatValue(vatValue)
-
-        return invoiceEntry
+        BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
+        return InvoiceEntry.builder()
+                .description("Toner")
+                .quantity(quantity)
+                .price(price)
+                .vatRate(vatRate)
+                .vatValue(vatValue)
+                .expansForCar(firstTestCar())
+                .build()
     }
 
 
@@ -232,7 +256,7 @@ abstract class TestHelpers extends Specification {
             System.out.println(invoiceIndex)
             try {
                 jsonService.convertToInvoices(invoiceList).forEach(invoice -> {
-                    mockMvc.perform(delete("/invoices/delete/" + invoiceIndex))
+                    mockMvc.perform(delete("/invoices/delete/" + invoice.id))
                     invoiceIndex++
                 })
             } catch (Exception exception) {
@@ -248,4 +272,15 @@ abstract class TestHelpers extends Specification {
         }
     }
 
+    Tax getTaxVatToTest() {
+        return Tax.builder()
+                .incomingVat(BigDecimal.valueOf(16580.93).setScale(2))
+                .outgoingVat(BigDecimal.valueOf(506.36).setScale(2))
+                .income(BigDecimal.valueOf(76011.62).setScale(2))
+                .costs(BigDecimal.valueOf(11729.47).setScale(2))
+                .earnings(BigDecimal.valueOf(64282.15).setScale(2))
+                .vatToPay(BigDecimal.valueOf(16074.57).setScale(2))
+                .roundedTaxCalculationBase(BigDecimal.valueOf(63768).setScale(2))
+                .build()
+    }
 }

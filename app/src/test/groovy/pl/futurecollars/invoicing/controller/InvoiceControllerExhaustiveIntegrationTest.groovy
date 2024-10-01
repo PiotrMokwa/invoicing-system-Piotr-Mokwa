@@ -34,21 +34,21 @@ class InvoiceControllerExhaustiveIntegrationTest extends TestHelpers {
     }
 
     Invoice "Invoice nr1"() {
-        def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        def invoice = createFirstInvoice()
         invoice.id = 1
         invoice.date = LocalDate.now().minusDays(1)
         return invoice
     }
 
     Invoice "Invoice nr2"() {
-        def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        def invoice = createFirstInvoice()
         invoice.id = 2
         invoice.date = LocalDate.now().minusDays(2)
         return invoice
     }
 
     Invoice "Invoice nr3"() {
-        def invoice = createFirstInvoice(createFirstCompany(), createSecondCompany())
+        def invoice = createFirstInvoice()
         invoice.id = 3
         invoice.date = LocalDate.now().minusDays(3)
         return invoice

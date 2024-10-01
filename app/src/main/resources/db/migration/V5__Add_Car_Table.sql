@@ -5,6 +5,3 @@ CREATE TABLE public.car
   car_Registration_Number character varying(10) NOT NULL,
  PRIMARY KEY (id)
 );
-
-ALTER TABLE public.car
-    OWNER to postgres
