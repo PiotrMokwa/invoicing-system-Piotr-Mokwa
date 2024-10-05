@@ -35,8 +35,8 @@ public class FileBasedDataBase implements Database {
   }
 
   @Override
-  public int save(Invoice invoice) {
-    int invoiceId = this.invoiceId.getId();
+  public Long save(Invoice invoice) {
+    Long invoiceId = this.invoiceId.getId();
     invoice.setId(invoiceId);
     this.invoiceId.setNextId();
     fileService.appendLineToFile(fileBase, jsonService.convertToJson(invoice));
@@ -45,11 +45,11 @@ public class FileBasedDataBase implements Database {
   }
 
   @Override
-  public Invoice getById(int id) {
+  public Invoice getById(Long id) {
     Invoice invoice = null;
     int standartizeIdBetwenBases = 1;
     try {
-      invoice = getAll().get(id - standartizeIdBetwenBases);
+      invoice = getAll().get(id.intValue() - standartizeIdBetwenBases);
     } catch (IndexOutOfBoundsException exception) {
       log.warn(exception.toString());
     }
@@ -78,12 +78,12 @@ public class FileBasedDataBase implements Database {
   }
 
   @Override
-  public Invoice delete(int id) {
+  public Invoice delete(Long id) {
     int standartizeIdBetwenBases = 1;
     List<Invoice> listOfInvoice = getAll();
     Invoice delatedInvoice = null;
     try {
-      delatedInvoice = listOfInvoice.remove(id - standartizeIdBetwenBases);
+      delatedInvoice = listOfInvoice.remove(id.intValue() - standartizeIdBetwenBases);
     } catch (IndexOutOfBoundsException e) {
       log.warn(e.toString());
     }
@@ -93,13 +93,13 @@ public class FileBasedDataBase implements Database {
   }
 
   @Override
-  public Invoice update(int id, Invoice updateInvoice) {
+  public Invoice update(Long id, Invoice updateInvoice) {
     List<Invoice> listOfInvoice = this.getAll();
     updateInvoice.setId(id);
     int standartizeIdBetwenBases = 1;
     Invoice deletedInvoice = null;
     try {
-      deletedInvoice = listOfInvoice.set(id - standartizeIdBetwenBases, updateInvoice);
+      deletedInvoice = listOfInvoice.set(id.intValue() - standartizeIdBetwenBases, updateInvoice);
     } catch (IndexOutOfBoundsException e) {
       log.warn(e.toString());
     }

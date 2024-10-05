@@ -2,10 +2,10 @@ CREATE TABLE public.invoice_entry
 (
     id              bigserial              NOT NULL,
     description     character varying(100) NOT NULL,
-    quantity        numeric(5,0)           NOT NULL,
+    quantity        numeric(5,2)           NOT NULL,
     price           numeric(10,2)          NOT NULL,
     vat_value       numeric(10,2)          NOT NULL,
-    vat_rate        numeric(10,2)          NOT NULL,
+    vat_rate        bigint                 NOT NULL,
     expanse_for_car bigint                 NOT NULL,
         PRIMARY KEY (id)
 );

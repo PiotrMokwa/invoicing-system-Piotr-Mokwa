@@ -3,11 +3,10 @@ package pl.futurecollars.invoicing.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import lombok.Getter;
-import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
-@ToString
+// @ToString
 public enum Vat {
 
   vat_23(23),

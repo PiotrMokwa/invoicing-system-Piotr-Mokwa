@@ -15,6 +15,8 @@ import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.db.file.FileBasedDataBase;
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase;
 import pl.futurecollars.invoicing.db.sql.SqlDatabase;
+import pl.futurecollars.invoicing.db.sql.jpa.InvoiceRepository;
+import pl.futurecollars.invoicing.db.sql.jpa.JpaDatabase;
 import pl.futurecollars.invoicing.model.Car;
 import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
@@ -50,14 +52,14 @@ public class SpringConfiguration {
   @Bean
   public Database inMemoryDatabase() {
     log.info("Create in memory base");
-    int nextId = 1;
+    Long nextId = 1L;
     Map<Integer, Invoice> invoices = new HashMap<>();
     return new InMemoryDatabase(nextId, invoices);
   }
 
   @Bean
   public Invoice invoice() {
-    return new Invoice(0, "", LocalDate.now(), new Company(), new Company(), new ArrayList<>() {
+    return new Invoice(0L, "", LocalDate.now(), new Company(), new Company(), new ArrayList<>() {
     });
   }
 
@@ -79,6 +81,12 @@ public class SpringConfiguration {
         .isPrivateUse(false)
         .carRegistrationNumber("")
         .build();
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = "application.dataBase", havingValue = "jpa")
+  public Database jpaDatabase(InvoiceRepository invoiceRepository) {
+    return new JpaDatabase(invoiceRepository);
   }
 
 }

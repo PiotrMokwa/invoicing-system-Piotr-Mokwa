@@ -35,7 +35,7 @@ class InMemoryDatabaseTest extends TestHelpers {
     def " get by ID"() {
         given:
         Invoice invoice1 = createFirstInvoice()
-        invoice1.id = 1
+        invoice1.id = 1L
         when:
         Invoice result = inMemoryDatabase.getById(1)
         then:
@@ -47,8 +47,8 @@ class InMemoryDatabaseTest extends TestHelpers {
         given:
         Invoice invoice1 = createFirstInvoice()
         Invoice invoice2 = createSecondInvoice()
-        invoice1.id = 1
-        invoice2.id = 2
+        invoice1.id = 1l
+        invoice2.id = 2L
         List<Invoice> listOfInvoices = new ArrayList<>()
         listOfInvoices[0] = invoice1
         listOfInvoices[1] = invoice2
@@ -61,11 +61,11 @@ class InMemoryDatabaseTest extends TestHelpers {
     def " update True"() {
         given:
         Invoice invoice4 = createSecondInvoice()
-        invoice4.buyer.id = "Updated Company"
-        invoice4.id = 1
+        invoice4.buyer.name = "Updated Company"
+        invoice4.id = 1L
         when:
-        inMemoryDatabase.update(1, invoice4)
-        def result = inMemoryDatabase.getById(1)
+        inMemoryDatabase.update(1L, invoice4)
+        def result = inMemoryDatabase.getById(1L)
         then:
         invoice4 == result
     }
@@ -73,10 +73,10 @@ class InMemoryDatabaseTest extends TestHelpers {
     def " update False"() {
         given:
         Invoice invoice4 = createSecondInvoice()
-        invoice4.buyer.id = "Updated Company"
-        invoice4.id = 0
+        invoice4.buyer.name = "Updated Company"
+        invoice4.id = 0L
         when:
-        Invoice result = inMemoryDatabase.update(5, invoice4)
+        Invoice result = inMemoryDatabase.update(5L, invoice4)
         then:
         result == null
     }
@@ -102,7 +102,7 @@ class InMemoryDatabaseTest extends TestHelpers {
 
     def " delete "() {
         when:
-        boolean wasDeleted = inMemoryDatabase.delete(1)
+        boolean wasDeleted = inMemoryDatabase.delete(1L)
         then:
         wasDeleted
     }

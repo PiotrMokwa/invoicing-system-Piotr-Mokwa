@@ -5,14 +5,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -32,29 +29,18 @@ import pl.futurecollars.invoicing.model.Vat;
 public class SqlDatabase implements Database {
 
   private final JdbcTemplate jdbcTemplate;
-  private final Map<Integer, Vat> vatToId = new HashMap<>();
-
-  @PostConstruct
-  public void initVatRatesMap() {
-
-    Map<Integer, Vat> vatTable = new HashMap<>();
-    jdbcTemplate.query("select * from vat",
-        rs -> {
-          vatToId.put(rs.getInt("id"), Vat.valueOf(rs.getString("name")));
-        });
-  }
 
   @Override
   @Transactional
-  public int save(Invoice invoice) {
+  public Long save(Invoice invoice) {
     log.info(invoice.toString());
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
       PreparedStatement preparedStatement =
           connection.prepareStatement(
-              "insert into companies"
-                  + " (name, address, tax_identification,healthInsuranceBaseValue,"
-                  + "pensionInsurance, amountOfHealthInsurance, amountOfHealthInsuranceToReduceTax) "
+              "insert into company"
+                  + " (name, address, tax_identification,health_insurance_base_value,"
+                  + "pension_insurance, amount_of_health_insurance, amount_of_health_insurance_to_reduce_tax) "
                   + "values (?,?,?,?,?,?,?);", new String[] {"id"});
       preparedStatement.setString(1, invoice.getBuyer().getName());
       preparedStatement.setString(2, invoice.getBuyer().getAddress());
@@ -69,10 +55,10 @@ public class SqlDatabase implements Database {
 
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection
-          .prepareStatement("insert into companies "
+          .prepareStatement("insert into company "
               +
-              "(tax_identification,name, address,healthInsuranceBaseValue,pensionInsurance,"
-              + " amountOfHealthInsurance, amountOfHealthInsuranceToReduceTax) "
+              "(tax_identification,name, address,health_insurance_base_value,pension_insurance,"
+              + " amount_of_health_insurance, amount_of_health_insurance_to_reduce_tax) "
               + "values (?,?,?,?,?,?,?);", new String[] {"id"});
       ps.setString(1, invoice.getSeller().getTaxIdentification());
       ps.setString(2, invoice.getSeller().getName());
@@ -88,7 +74,7 @@ public class SqlDatabase implements Database {
 
     jdbcTemplate.update(connection -> {
       PreparedStatement preparedStatement = connection
-          .prepareStatement("insert into invoice (date,invoice_number,seller,buyer) values (?,?,?,?);", new String[] {"id"});
+          .prepareStatement("insert into invoice (date,number,seller,buyer) values (?,?,?,?);", new String[] {"id"});
       preparedStatement.setDate(1, Date.valueOf(invoice.getDate()));
       preparedStatement.setString(2, invoice.getNumber());
       preparedStatement.setLong(3, sellerId);
@@ -107,11 +93,7 @@ public class SqlDatabase implements Database {
         ps.setBigDecimal(2, invoiceEntry.getQuantity());
         ps.setBigDecimal(3, invoiceEntry.getPrice());
         ps.setBigDecimal(4, invoiceEntry.getVatValue());
-        ps.setInt(5, vatToId
-            .entrySet()
-            .stream()
-            .filter(vatEntry -> vatEntry.getValue() == invoiceEntry.getVatRate())
-            .collect(Collectors.toList()).get(0).getKey());
+        ps.setString(5, invoiceEntry.getVatRate().name());
         ps.setLong(6, insertCarReturnId(invoiceEntry, keyHolder));
         return ps;
       }, keyHolder);
@@ -126,17 +108,17 @@ public class SqlDatabase implements Database {
         return ps;
       });
     });
-    return invoiceId;
+    return Integer.valueOf(invoiceId).longValue();
   }
 
   @Override
-  public Invoice getById(int id) {
+  public Invoice getById(Long id) {
 
     return jdbcTemplate.query(askSqlForGetAllInvoice() + " where i.id = " + id, rse -> {
       if (!rse.next()) {
         return null;
       } else {
-        int invoiceId = rse.getInt("id");
+        Long invoiceId = rse.getLong("id");
         return buildInvoice(rse, invoiceId);
       }
     });
@@ -144,29 +126,29 @@ public class SqlDatabase implements Database {
 
   public String askSqlForGetAllInvoice() {
 
-    return "select i.id, i.date ,i.invoice_number, "
+    return "select i.id, i.date ,i.number, "
         + "c1.id as seller_id,"
         + "c1.name as seller_name, "
         + "c1.tax_identification as seller_tax_identification, "
         + "c1.address as seller_address, "
-        + "c1.healthinsurancebasevalue as seller_healthinsurancebasevalue, "
-        + "c1.pensioninsurance as seller_pensioninsurance, "
-        + "c1.amountofhealthinsurance as seller_amountofhealthinsurance, "
-        + "c1.amountofhealthinsurancetoreducetax as seller_amountofhealthinsurancetoreducetax, "
+        + "c1.health_insurance_base_value as seller_health_insurance_base_value, "
+        + "c1.pension_insurance as seller_pension_insurance, "
+        + "c1.amount_of_health_insurance as seller_amount_of_health_insurance, "
+        + "c1.amount_of_health_insurance_to_reduce_tax as seller_amount_of_health_insurance_to_reduce_tax, "
         + "c2.id as buyer_id,"
         + "c2.name as buyer_name, "
         + "c2.tax_identification as buyer_tax_identification, "
         + "c2.address as buyer_address, "
-        + "c2.healthinsurancebasevalue as buyer_healthinsurancebasevalue, "
-        + "c2.pensioninsurance as buyer_pensioninsurance, "
-        + "c2.amountofhealthinsurance as buyer_amountofhealthinsurance, "
-        + "c2.amountofhealthinsurancetoreducetax as buyer_amountofhealthinsurancetoreducetax "
+        + "c2.health_insurance_base_value as buyer_health_insurance_base_value, "
+        + "c2.pension_insurance as buyer_pension_insurance, "
+        + "c2.amount_of_health_insurance as buyer_amount_of_health_insurance, "
+        + "c2.amount_of_health_insurance_to_reduce_tax as buyer_amount_of_health_insurance_to_reduce_tax "
         + "from invoice i "
-        + "inner join companies c1 on i.seller = c1.id "
-        + "inner join companies c2 on i.buyer = c2.id ";
+        + "inner join company c1 on i.seller = c1.id "
+        + "inner join company c2 on i.buyer = c2.id ";
   }
 
-  public List<InvoiceEntry> readSqlInvoiceEntry(int invoiceId) {
+  public List<InvoiceEntry> readSqlInvoiceEntry(Long invoiceId) {
 
     return jdbcTemplate.query("select * from invoice_invoice_entry iie "
             + "inner join invoice_entry ie on ie.id = iie.invoice_entry_id "
@@ -177,7 +159,7 @@ public class SqlDatabase implements Database {
             .quantity(entryRow.getBigDecimal("quantity"))
             .price(entryRow.getBigDecimal("price"))
             .vatValue(entryRow.getBigDecimal("vat_value"))
-            .vatRate(vatToId.get(entryRow.getInt("vat_rate")))
+            .vatRate(Vat.valueOf(entryRow.getString("vat_rate")))
             .expansForCar(Car.builder()
                 .carRegistrationNumber(entryRow.getString("car_registration_number"))
                 .isPrivateUse(entryRow.getBoolean("is_private_use"))
@@ -186,33 +168,33 @@ public class SqlDatabase implements Database {
     );
   }
 
-  public Invoice buildInvoice(ResultSet resultSet, int invoiceId) {
+  public Invoice buildInvoice(ResultSet resultSet, Long invoiceId) {
     Invoice invoice = new Invoice();
     try {
       invoice = Invoice.builder()
           .id(invoiceId)
           .date(resultSet.getDate("date").toLocalDate())
-          .number(resultSet.getString("invoice_number"))
+          .number(resultSet.getString("number"))
           .buyer(
               Company.builder()
-                  .id(resultSet.getString("buyer_id"))
+                  .id(resultSet.getLong("buyer_id"))
                   .name(resultSet.getString("buyer_name"))
                   .taxIdentification(resultSet.getString("buyer_tax_identification"))
                   .address(resultSet.getString("buyer_address"))
-                  .healthInsuranceBaseValue(resultSet.getBigDecimal("buyer_healthinsurancebasevalue"))
-                  .pensionInsurance(resultSet.getBigDecimal("buyer_pensioninsurance"))
-                  .amountOfHealthInsurance(resultSet.getBigDecimal("buyer_amountofhealthinsurance"))
-                  .amountOfHealthInsuranceToReduceTax(resultSet.getBigDecimal("buyer_amountofhealthinsurancetoreducetax"))
+                  .healthInsuranceBaseValue(resultSet.getBigDecimal("buyer_health_insurance_base_value"))
+                  .pensionInsurance(resultSet.getBigDecimal("buyer_pension_insurance"))
+                  .amountOfHealthInsurance(resultSet.getBigDecimal("buyer_amount_of_health_insurance"))
+                  .amountOfHealthInsuranceToReduceTax(resultSet.getBigDecimal("buyer_amount_of_health_insurance_to_reduce_tax"))
                   .build())
           .seller(Company.builder()
-              .id(resultSet.getString("seller_id"))
+              .id(resultSet.getLong("seller_id"))
               .name(resultSet.getString("seller_name"))
               .taxIdentification(resultSet.getString("seller_tax_identification"))
               .address(resultSet.getString("seller_address"))
-              .healthInsuranceBaseValue(resultSet.getBigDecimal("seller_healthinsurancebasevalue"))
-              .pensionInsurance(resultSet.getBigDecimal("seller_pensioninsurance"))
-              .amountOfHealthInsurance(resultSet.getBigDecimal("seller_amountofhealthinsurance"))
-              .amountOfHealthInsuranceToReduceTax(resultSet.getBigDecimal("seller_amountofhealthinsurancetoreducetax"))
+              .healthInsuranceBaseValue(resultSet.getBigDecimal("seller_health_insurance_base_value"))
+              .pensionInsurance(resultSet.getBigDecimal("seller_pension_insurance"))
+              .amountOfHealthInsurance(resultSet.getBigDecimal("seller_amount_of_health_insurance"))
+              .amountOfHealthInsuranceToReduceTax(resultSet.getBigDecimal("seller_amount_of_health_insurance_to_reduce_tax"))
               .build())
           .listOfInvoiceEntry(readSqlInvoiceEntry(invoiceId))
           .build();
@@ -227,7 +209,7 @@ public class SqlDatabase implements Database {
 
     return jdbcTemplate.query(
         askSqlForGetAllInvoice() + "order by id ", (rs, rowNr) -> {
-          int invoiceId = rs.getInt("id");
+          Long invoiceId = rs.getLong("id");
           return buildInvoice(rs, invoiceId);
         });
   }
@@ -245,27 +227,27 @@ public class SqlDatabase implements Database {
   }
 
   @Override
-  public Invoice update(int id, Invoice updateInvoice) {
+  public Invoice update(Long id, Invoice updateInvoice) {
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(
         connection -> {
           PreparedStatement ps = connection.prepareStatement(
               " update invoice i "
-                  + "set date = ?, invoice_number = ? "
+                  + "set date = ?, number = ? "
                   + "where i.id = " + id, new String[] {"seller", "buyer"});
           ps.setDate(1, Date.valueOf(updateInvoice.getDate()));
           ps.setString(2, updateInvoice.getNumber());
           return ps;
         }, keyHolder);
     Map<String, Object> companyKeys = keyHolder.getKeys();
-    updateCompanies(companyKeys.get("seller"), updateInvoice.getSeller());
-    updateCompanies(companyKeys.get("buyer"), updateInvoice.getBuyer());
+    updateCompany(companyKeys.get("seller"), updateInvoice.getSeller());
+    updateCompany(companyKeys.get("buyer"), updateInvoice.getBuyer());
     deleteEntries(id);
     addEntries(id, updateInvoice.getListOfInvoiceEntry());
     return null;
   }
 
-  public void addEntries(int invoiceId, List<InvoiceEntry> list) {
+  public void addEntries(Long invoiceId, List<InvoiceEntry> list) {
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     list.forEach(invoiceEntry -> {
       jdbcTemplate.update(coonection -> {
@@ -277,11 +259,7 @@ public class SqlDatabase implements Database {
         ps.setBigDecimal(2, invoiceEntry.getQuantity());
         ps.setBigDecimal(3, invoiceEntry.getPrice());
         ps.setBigDecimal(4, invoiceEntry.getVatValue());
-        ps.setInt(5, vatToId
-            .entrySet()
-            .stream()
-            .filter(vatEntry -> vatEntry.getValue() == invoiceEntry.getVatRate())
-            .collect(Collectors.toList()).get(0).getKey());
+        ps.setString(5, invoiceEntry.getVatRate().name());
         ps.setLong(6, insertCarReturnId(invoiceEntry, keyHolder));
         return ps;
       }, keyHolder);
@@ -290,37 +268,37 @@ public class SqlDatabase implements Database {
       jdbcTemplate.update(coonection -> {
         PreparedStatement ps = coonection.prepareStatement(
             "insert into invoice_invoice_entry  (invoice_id,invoice_entry_id) values(?,?) ");
-        ps.setInt(1, invoiceId);
-        ps.setInt(2, invoiceEntryId);
+        ps.setLong(1, invoiceId);
+        ps.setLong(2, invoiceEntryId);
         return ps;
       });
     });
   }
 
-  public void deleteEntries(int invoiceId) {
+  public void deleteEntries(Long invoiceId) {
     jdbcTemplate.update(connection -> {
 
       PreparedStatement ps = connection.prepareStatement(
           "delete from invoice_invoice_entry where invoice_id = ?");
-      ps.setInt(1, invoiceId);
+      ps.setLong(1, invoiceId);
       return ps;
     });
   }
 
-  public Invoice deleteInvoice(int id) {
+  public Invoice deleteInvoice(Long id) {
 
     Invoice deletedInvoice = getById(id);
     jdbcTemplate.update("delete from invoice i where i.id =  " + id);
     return deletedInvoice;
   }
 
-  public void updateCompanies(Object companyKey, Company company) {
+  public void updateCompany(Object companyKey, Company company) {
 
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "update companies c "
-              + "set tax_identification = ?, name = ?, address = ?, healthinsurancebasevalue = ?, "
-              + "pensioninsurance = ?, amountofhealthinsurance = ?, amountofhealthinsurancetoreducetax = ? "
+          "update company c "
+              + "set tax_identification = ?, name = ?, address = ?, health_insurance_base_value = ?, "
+              + "pension_insurance = ?, amount_of_health_insurance = ?, amount_of_health_insurance_to_reduce_tax = ? "
               + "where c.id = " + companyKey);
       ps.setString(1, company.getTaxIdentification());
       ps.setString(2, company.getName());
@@ -334,7 +312,7 @@ public class SqlDatabase implements Database {
   }
 
   @Override
-  public Invoice delete(int id) {
+  public Invoice delete(Long id) {
 
     deleteInvoice(id);
     return deleteInvoice(id);

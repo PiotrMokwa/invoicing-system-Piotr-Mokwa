@@ -1,0 +1,35 @@
+server:
+  port: 5555
+application:
+  dataBase: jpa
+  dataBase.filePath.base: prodBase.txt
+  dataBase.filePath.invoiceId: prodBaseId.txt
+  logging:
+    file:
+      name: Logs/prodLogs.log
+    level:
+      pl:
+        futurecollars:
+          invoicing: INFO
+          db: DEBUG
+spring:
+  profiles: jpa-flyway
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/invoicing
+    username: postgres
+    password: Piotr
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: true
+  output:
+    ansi:
+      enabled: always
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

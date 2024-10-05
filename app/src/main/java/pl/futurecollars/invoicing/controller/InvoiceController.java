@@ -46,7 +46,7 @@ public class InvoiceController {
   }
 
   @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
-  public ResponseEntity<?> getInvoice(@PathVariable("id") @Parameter(name = "id", description = "id", example = "1") int id) {
+  public ResponseEntity<?> getInvoice(@PathVariable("id") @Parameter(name = "id", description = "id", example = "1") Long id) {
     return Optional.ofNullable(invoiceService.getById(id))
         .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -54,14 +54,14 @@ public class InvoiceController {
 
   @PutMapping(value = "/update/{id}", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> updateInvoice(
-      @PathVariable("id") @Parameter(name = "id", description = "id", example = "1") int id, @RequestBody Invoice newInvocie) {
+      @PathVariable("id") @Parameter(name = "id", description = "id", example = "1") Long id, @RequestBody Invoice newInvocie) {
     return Optional.ofNullable(invoiceService.update(id, newInvocie))
         .map(value -> ResponseEntity.status(HttpStatus.CREATED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
   @DeleteMapping(value = "/delete/{id}", produces = {"application/json;charset=UTF-8"})
-  public ResponseEntity<?> delete(@PathVariable("id") @Parameter(name = "id", description = "id", example = "1") int id) {
+  public ResponseEntity<?> delete(@PathVariable("id") @Parameter(name = "id", description = "id", example = "1") Long id) {
     return Optional.ofNullable(invoiceService.delete(id))
         .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());

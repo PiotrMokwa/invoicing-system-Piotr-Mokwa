@@ -21,7 +21,7 @@ public class InvoiceService {
 
   }
 
-  public Invoice getById(int id) {
+  public Invoice getById(Long id) {
     log.info("Invoice Service getById");
     return dataBase.getById(id);
   }
@@ -31,17 +31,17 @@ public class InvoiceService {
     return dataBase.getAll().isEmpty() ? null : dataBase.getAll();
   }
 
-  public Invoice update(int id, Invoice updateInvoice) {
+  public Invoice update(Long id, Invoice updateInvoice) {
     log.info("Invoice Service update");
     return dataBase.update(id, updateInvoice);
   }
 
-  public Invoice delete(int id) {
+  public Invoice delete(Long id) {
     log.info("Invoice Service delete");
     return dataBase.delete(id);
   }
 
-  public int save(Invoice invoice) {
+  public Long save(Invoice invoice) {
     log.info("Invoice Service save");
     return dataBase.save(invoice);
   }
