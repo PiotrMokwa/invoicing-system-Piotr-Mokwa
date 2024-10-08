@@ -1,6 +1,6 @@
 server:
   port: 7750
-application:
+invoicing-system:
   dataBase: inMemoryBase
   dataBase.filePath.base: devBase.txt
   dataBase.filePath.invoiceId: devBaseId.txt
