@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.db.sql.jpa;
+package pl.futurecollars.invoicing.db.jpa;
 
 import java.math.BigDecimal;
 import java.util.List;
