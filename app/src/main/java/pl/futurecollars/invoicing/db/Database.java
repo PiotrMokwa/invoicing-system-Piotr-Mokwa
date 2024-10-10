@@ -9,15 +9,15 @@ import pl.futurecollars.invoicing.model.InvoiceEntry;
 
 public interface Database {
 
-  int save(Invoice invoice);
+  Long save(Invoice invoice);
 
-  Invoice getById(int id);
+  Invoice getById(Long id);
 
   List<Invoice> getAll();
 
-  Invoice update(int id, Invoice updateInvoice);
+  Invoice update(Long id, Invoice updateInvoice);
 
-  Invoice delete(int id);
+  Invoice delete(Long id);
 
   BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry);
 

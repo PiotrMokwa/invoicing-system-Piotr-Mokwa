@@ -88,10 +88,12 @@ dependencies {
     // Use the latest Groovy version for Spock testing
     testImplementation "org.apache.groovy:groovy:${apachGroovyVersion}"
 
-//     Use the awesome Spock testing and specification framework even with Java
+    //Use the awesome Spock testing and specification framework even with Java
     testImplementation 'junit:junit:4.13.2'
-//sql base test
+    //sql base test
     testImplementation 'com.h2database:h2:2.1.210'
+    //lesson 13 jpa dependency
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     compileOnly "org.projectlombok:lombok:${lambokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lambokVersion}"
@@ -162,18 +164,32 @@ bootRun {
     args = ["--spring.profiles.active=" + profile]
 }
 
-task testWithFileDatabase(type:Test){
-    systemProperty 'spring.profiles.active','fileBase'
+task testWithFileDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'fileBase'
 }
 
-task testWithInMemoryDatabase(type:Test){
-    systemProperty 'spring.profiles.active','inMemoryBase'
+task testWithInMemoryDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'inMemoryBase'
 }
 
-task testWithSQLDatabase(type:Test){
-    systemProperty 'spring.profiles.active','SQLBase'
+task testWithSQLDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'SQLBase'
+}
+task testWithJpaDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'jpa'
+}
+    task testWithJpaFlywayDatabase(type: Test){
+    systemProperty 'spring.profiles.active', 'jpa-flyway'
 }
 
-check.dependsOn(testWithFileDatabase)
-check.dependsOn(testWithInMemoryDatabase)
-//check.dependsOn(testWithSQLDatabase)
+
+check.dependsOn testWithFileDatabase
+check.dependsOn testWithInMemoryDatabase
+check.dependsOn testWithSQLDatabase
+check.dependsOn testWithJpaDatabase
+check.dependsOn testWithJpaFlywayDatabase
+
+String osName = System.getProperty("os.name").toLowerCase()
+if(osName.contains("mac")){
+    check.dependsOn testWithSQLDatabase
+}

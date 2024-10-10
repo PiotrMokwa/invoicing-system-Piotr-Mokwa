@@ -13,7 +13,7 @@ import pl.futurecollars.invoicing.setup.InvoiceSetup;
 public class IdService {
 
   private FileService fileService;
-  private int nextId;
+  private Long nextId;
   private final Path fileId;
 
   public IdService(InvoiceSetup invoiceSetup) {
@@ -28,9 +28,9 @@ public class IdService {
     log.info("setNextId!!!");
   }
 
-  public int getId() {
+  public Long getId() {
     String number = fileService.readAllLines(fileId).get(0);
     log.info("getId");
-    return Integer.parseInt(number);
+    return Long.parseLong(number);
   }
 }

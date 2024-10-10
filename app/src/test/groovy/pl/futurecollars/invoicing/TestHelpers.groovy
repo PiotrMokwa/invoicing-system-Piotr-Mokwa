@@ -181,7 +181,7 @@ abstract class TestHelpers extends Specification {
 
     static InvoiceEntry createFirstInvoiceEntry() {
 
-        BigDecimal quantity = BigDecimal.ONE
+        BigDecimal quantity = BigDecimal.ONE.setScale(2)
         BigDecimal price = BigDecimal.valueOf(70000.00).setScale(2)
         Vat vatRate = Vat.vat_23
         BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
@@ -198,7 +198,7 @@ abstract class TestHelpers extends Specification {
 
     static InvoiceEntry createSecondInvoiceEntry() {
 
-        BigDecimal quantity = BigDecimal.ONE
+        BigDecimal quantity = BigDecimal.ONE.setScale(2)
         BigDecimal price = BigDecimal.valueOf(6011.62)
         Vat vatRate = Vat.vat_8
         BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
@@ -214,7 +214,7 @@ abstract class TestHelpers extends Specification {
 
     static InvoiceEntry createThirdInvoiceEntry() {
 
-        BigDecimal quantity = BigDecimal.ONE
+        BigDecimal quantity = BigDecimal.ONE.setScale(2)
         BigDecimal price = BigDecimal.valueOf(10000.00).setScale(2)
         Vat vatRate = Vat.vat_8
         BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)
@@ -230,7 +230,7 @@ abstract class TestHelpers extends Specification {
 
     static InvoiceEntry createForthInvoiceEntry() {
 
-        BigDecimal quantity = BigDecimal.ONE
+        BigDecimal quantity = BigDecimal.ONE.setScale(2)
         BigDecimal price = BigDecimal.valueOf(1329.47)
         Vat vatRate = Vat.vat_8
         BigDecimal vatValue = (price * vatRate.getVatValue()).setScale(2, RoundingMode.UP)

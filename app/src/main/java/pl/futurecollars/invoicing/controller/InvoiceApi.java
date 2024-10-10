@@ -22,13 +22,13 @@ public interface InvoiceApi {
 
   @ApiOperation(value = "Get single invoice with selected id")
   @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
-  ResponseEntity<?> getInvoice(@PathVariable int id);
+  ResponseEntity<?> getInvoice(@PathVariable Long id);
 
   @ApiOperation(value = "Update invoice with selected id")
   @PutMapping(value = "/update/{id}", produces = {"application/json;charset=UTF-8"})
-  ResponseEntity<?> updateInvoice(@PathVariable int id, @RequestBody Invoice newInvocie);
+  ResponseEntity<?> updateInvoice(@PathVariable Long id, @RequestBody Invoice newInvocie);
 
   @ApiOperation(value = "Delete invoice with selected id")
   @DeleteMapping("/delete/{id}")
-  ResponseEntity<?> delete(@PathVariable int id);
+  ResponseEntity<?> delete(@PathVariable Long id);
 }
