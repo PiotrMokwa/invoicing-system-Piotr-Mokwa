@@ -19,6 +19,7 @@ buildscript {
         springFoxStarterVersion = '3.0.0'
         springFoxUiVersion = '3.0.0'
         flywayVersion = '10.15.2'
+        mongoVersion = '3.12.14'
     }
 }
 
@@ -94,6 +95,8 @@ dependencies {
     testImplementation 'com.h2database:h2:2.1.210'
     //lesson 13 jpa dependency
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    //lesson 14 mongoDB
+    implementation "org.mongodb:mongo-java-driver:${mongoVersion}"
 
     compileOnly "org.projectlombok:lombok:${lambokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lambokVersion}"
@@ -178,18 +181,22 @@ task testWithSQLDatabase(type: Test) {
 task testWithJpaDatabase(type: Test) {
     systemProperty 'spring.profiles.active', 'jpa'
 }
-    task testWithJpaFlywayDatabase(type: Test){
+task testWithJpaFlywayDatabase(type: Test) {
     systemProperty 'spring.profiles.active', 'jpa-flyway'
 }
 
+task testWithMongoDatabse(type: Test) {
+    systemProperty 'spring.profiles.active', 'mongo'
+}
 
 check.dependsOn testWithFileDatabase
 check.dependsOn testWithInMemoryDatabase
 check.dependsOn testWithSQLDatabase
 check.dependsOn testWithJpaDatabase
 check.dependsOn testWithJpaFlywayDatabase
+check.dependsOn testWithMongoDatabse
 
 String osName = System.getProperty("os.name").toLowerCase()
-if(osName.contains("mac")){
+if (osName.contains("mac")) {
     check.dependsOn testWithSQLDatabase
 }

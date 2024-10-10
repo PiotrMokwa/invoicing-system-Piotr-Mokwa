@@ -11,7 +11,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Start MongoDB
+        uses: supercharger/mongodb-github-action@1.3.0
+        with:
+          mongodb-version: 4.4
+
       - name: Build with gradle
         run: ./gradlew build

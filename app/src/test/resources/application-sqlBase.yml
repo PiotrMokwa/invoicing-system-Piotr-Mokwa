@@ -7,5 +7,5 @@ spring:
     flyway:
       enabled: true
 
-application:
+invoicing-system:
   dataBase: sqlBase
