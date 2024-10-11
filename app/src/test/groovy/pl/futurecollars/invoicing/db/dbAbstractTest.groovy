@@ -7,7 +7,6 @@ import spock.lang.Specification;
 
 import static pl.futurecollars.invoicing.TestHelpers.*;
 
-@SpringBootTest
 abstract class dbAbstractTest extends Specification {
 
     abstract Database getDataBaseInstance();

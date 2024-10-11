@@ -14,8 +14,6 @@ import spock.lang.Specification
 
 import javax.sql.DataSource
 
-//@ConditionalOnProperty(value = "application.dataBase", havingValue = "sqlBase")
-@ActiveProfiles("sqlBase")
 class SqlDatabaseTest extends dbAbstractTest {
 
     @Override
