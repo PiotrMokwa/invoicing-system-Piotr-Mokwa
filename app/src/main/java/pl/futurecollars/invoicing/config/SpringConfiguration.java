@@ -27,8 +27,8 @@ import pl.futurecollars.invoicing.db.file.FileBasedDataBase;
 import pl.futurecollars.invoicing.db.jpa.InvoiceRepository;
 import pl.futurecollars.invoicing.db.jpa.JpaDatabase;
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase;
-import pl.futurecollars.invoicing.db.noSQL.MongoBaseDatabase;
-import pl.futurecollars.invoicing.db.noSQL.MongoIdProvider;
+import pl.futurecollars.invoicing.db.nosql.MongoBaseDatabase;
+import pl.futurecollars.invoicing.db.nosql.MongoIdProvider;
 import pl.futurecollars.invoicing.db.sql.SqlDatabase;
 import pl.futurecollars.invoicing.model.Car;
 import pl.futurecollars.invoicing.model.Company;
@@ -135,10 +135,10 @@ public class SpringConfiguration {
   @Bean
   @ConditionalOnProperty(name = "invoicing-system.dataBase", havingValue = "mongoDB")
   public Database mongoInvoicesDataBase(
-  @Value("${invoicing-system.dataBase.collection}") String collectionName,
-  MongoDatabase mongoDatabase,
-  MongoIdProvider mongoIdProvider
-    ){
+      @Value("${invoicing-system.dataBase.collection}") String collectionName,
+      MongoDatabase mongoDatabase,
+      MongoIdProvider mongoIdProvider
+  ) {
     MongoCollection<Invoice> invoicesCollection = mongoDatabase.getCollection(collectionName, Invoice.class);
     return MongoBaseDatabase.builder()
         .invoicesCollection(invoicesCollection)

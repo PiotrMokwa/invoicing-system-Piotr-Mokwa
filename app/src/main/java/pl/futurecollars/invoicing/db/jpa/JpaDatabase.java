@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
@@ -18,8 +19,16 @@ public class JpaDatabase implements Database {
 
   @Override
   public Long save(Invoice invoice) {
+    Invoice addedInvoice = null;
+    try {
 
-    return invoiceRepository.save(invoice).getId();
+      addedInvoice = invoiceRepository.save(invoice);
+      System.out.println(addedInvoice);
+    } catch (IllegalArgumentException | OptimisticLockingFailureException iae) {
+      System.out.println(iae);
+    }
+
+    return addedInvoice.getId();
   }
 
   @Override

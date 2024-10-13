@@ -8,9 +8,9 @@ import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.dbAbstractTest
 
 
-
+@ActiveProfiles("jpa")
 @DataJpaTest
-@IfProfileValue(name="spring.profiles.active", value ='jpa')
+//@IfProfileValue(name="spring.profiles.active", value ='jpa')
 class JpaDatabaseTest extends dbAbstractTest {
 
     @Autowired

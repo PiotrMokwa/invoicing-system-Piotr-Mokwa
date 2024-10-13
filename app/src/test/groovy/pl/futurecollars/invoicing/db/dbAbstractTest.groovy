@@ -1,11 +1,10 @@
 package pl.futurecollars.invoicing.db
 
-import org.springframework.boot.test.context.SpringBootTest
-import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.model.InvoiceEntry;
-import spock.lang.Specification;
+import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.model.InvoiceEntry
+import spock.lang.Specification
 
-import static pl.futurecollars.invoicing.TestHelpers.*;
+import static pl.futurecollars.invoicing.TestHelpers.*
 
 abstract class dbAbstractTest extends Specification {
 
@@ -56,11 +55,15 @@ abstract class dbAbstractTest extends Specification {
 
     def " test save third invoice"() {
         given:
-
+        System.out.println(" 1: " + database.getAll().size())
         Invoice thirdInvoice = createFirstInvoice()
+        Invoice forthInvoice = createSecondInvoice()
+
         def lastInviceId = database.save(thirdInvoice)
+        System.out.println(" 2: " + database.getAll().size())
         when:
-        def result = database.save(thirdInvoice)
+        def result = database.save(forthInvoice)
+        System.out.println(" 3: " + database.getAll().size())
 
         then:
         result == lastInviceId +1

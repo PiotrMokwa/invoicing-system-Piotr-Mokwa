@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.db.noSQL;
+package pl.futurecollars.invoicing.db.nosql;
 
 import com.mongodb.client.MongoCollection;
 import javax.annotation.PostConstruct;
@@ -15,7 +15,7 @@ public class MongoIdProvider {
   private static final Document FILTER_DOCUMENT = new Document(ID_KEY, ID_VALUE);
   private final MongoCollection<Document> collection;
   private long lastValue = 0;
-  
+
   @PostConstruct
   private void postConstruct() {
     var iterator = collection.find(FILTER_DOCUMENT).iterator();
@@ -36,10 +36,9 @@ public class MongoIdProvider {
     return document;
   }
 
-
   public long getNextIdAndIncrement() {
     collection.findOneAndReplace(FILTER_DOCUMENT, counterDocument(++lastValue));
     System.out.println("mongo id getNextIdAndIncrement: " + lastValue);
-return lastValue;
+    return lastValue;
   }
 }

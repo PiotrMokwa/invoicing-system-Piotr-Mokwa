@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.db.noSQL;
+package pl.futurecollars.invoicing.db.nosql;
 
 import com.mongodb.client.MongoCollection;
 import java.math.BigDecimal;
@@ -21,13 +21,14 @@ import pl.futurecollars.invoicing.model.InvoiceEntry;
 @Data
 public class MongoBaseDatabase implements Database {
 
-  private MongoCollection<Invoice> invoicesCollection;
   public MongoIdProvider mongoIdProvider;
+  private MongoCollection<Invoice> invoicesCollection;
 
+  private Document documentIdFilter(Long id) {
 
-  private Document documentIdFilter(Long id){
-    return new Document("_id",id);
+    return new Document("_id", id);
   }
+
   @Override
   public Long save(Invoice invoice) {
 
@@ -45,7 +46,7 @@ public class MongoBaseDatabase implements Database {
 
   @Override
   public List<Invoice> getAll() {
-    return StreamSupport.stream(invoicesCollection.find().spliterator(),false)
+    return StreamSupport.stream(invoicesCollection.find().spliterator(), false)
         .collect(Collectors.toList());
 
   }
@@ -55,12 +56,12 @@ public class MongoBaseDatabase implements Database {
 
     updateInvoice.setId(id);
     System.out.println("invoice id" + updateInvoice.getId());
-    return invoicesCollection.findOneAndReplace(documentIdFilter(id),updateInvoice);
+    return invoicesCollection.findOneAndReplace(documentIdFilter(id), updateInvoice);
   }
 
   @Override
   public Invoice delete(Long id) {
-    
+
     return invoicesCollection.findOneAndDelete(documentIdFilter(id));
   }
 
