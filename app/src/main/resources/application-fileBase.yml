@@ -1,6 +1,6 @@
 server:
   port: 5555
-application:
+invoicing-system:
   dataBase: fileBase
   dataBase.filePath.base: prodBase.txt
   dataBase.filePath.invoiceId: prodBaseId.txt

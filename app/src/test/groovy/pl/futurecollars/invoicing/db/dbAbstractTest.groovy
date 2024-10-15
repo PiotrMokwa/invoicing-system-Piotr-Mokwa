@@ -1,10 +1,10 @@
 package pl.futurecollars.invoicing.db
 
-import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.model.InvoiceEntry;
-import spock.lang.Specification;
+import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.model.InvoiceEntry
+import spock.lang.Specification
 
-import static pl.futurecollars.invoicing.TestHelpers.*;
+import static pl.futurecollars.invoicing.TestHelpers.*
 
 abstract class dbAbstractTest extends Specification {
 
@@ -55,13 +55,18 @@ abstract class dbAbstractTest extends Specification {
 
     def " test save third invoice"() {
         given:
-
+        System.out.println(" 1: " + database.getAll().size())
         Invoice thirdInvoice = createFirstInvoice()
-        thirdInvoice.id = 3
+        Invoice forthInvoice = createSecondInvoice()
+
+        def lastInviceId = database.save(thirdInvoice)
+        System.out.println(" 2: " + database.getAll().size())
         when:
-        def result = database.save(thirdInvoice)
+        def result = database.save(forthInvoice)
+        System.out.println(" 3: " + database.getAll().size())
+
         then:
-        result == 3
+        result == lastInviceId +1
 
 
     }

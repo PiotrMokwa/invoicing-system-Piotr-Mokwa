@@ -1,0 +1,31 @@
+server:
+  port: 8888
+invoicing-system:
+  dataBase: mongoDB
+  dataBase.name: invoices
+  dataBase.collection: invoices
+  dataBase.counter.collection: invoicesId
+  dataBase.filePath.base: prodBase.txt
+  dataBase.filePath.invoiceId: prodBaseId.txt
+  logging:
+    file:
+      name: Logs/prodLogs.log
+    level:
+      pl:
+        futurecollars:
+          invoicing: INFO
+          db: DEBUG
+spring:
+  profiles: mongo
+  output:
+    ansi:
+      enabled: always
+  flyway:
+    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
