@@ -19,12 +19,12 @@ import pl.futurecollars.invoicing.model.Tax;
 @Service
 public class TaxCalculatorService {
 
-  private Database dataBase;
+  private Database<Invoice> dataBase;
   private JsonService jsonService;
   private Company company;
   private BigDecimal incomeTaxPercent;
 
-  public TaxCalculatorService(Database dataBase) {
+  public TaxCalculatorService(Database<Invoice> dataBase) {
 
     this.dataBase = dataBase;
     this.jsonService = new JsonService();
@@ -54,33 +54,33 @@ public class TaxCalculatorService {
   Function<InvoiceEntry, BigDecimal> getCostsIncludingCarForPersonalUse() {
 
     return value -> value.getExpansForCar().isPrivateUse()
-            ? value.getPrice()
-                .add(
-                    value.getVatValue().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))
-                .setScale(2, RoundingMode.HALF_UP)
-            : value.getPrice();
+        ? value.getPrice()
+        .add(
+            value.getVatValue().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))
+        .setScale(2, RoundingMode.HALF_UP)
+        : value.getPrice();
   }
 
   public BigDecimal incomingVat() {
     log.info("incomingVat");
-    return dataBase.visit(isSeller(), getVatIncludingCarForPersonalUse())
+    return visit(isSeller(), getVatIncludingCarForPersonalUse())
         .setScale(2, RoundingMode.HALF_UP);
   }
 
   public BigDecimal outgoingVat() {
     log.info("outgoingVat");
-    return dataBase.visit(isBayer(), getVatIncludingCarForPersonalUse())
+    return visit(isBayer(), getVatIncludingCarForPersonalUse())
         .setScale(2, RoundingMode.HALF_UP);
   }
 
   public BigDecimal income() {
     log.info("income");
-    return dataBase.visit(isSeller(), InvoiceEntry::getPrice);
+    return visit(isSeller(), InvoiceEntry::getPrice);
   }
 
   public BigDecimal costs() {
     log.info("costs");
-    return dataBase.visit(isBayer(), getCostsIncludingCarForPersonalUse());
+    return visit(isBayer(), getCostsIncludingCarForPersonalUse());
   }
 
   public BigDecimal earnings() {
@@ -154,5 +154,18 @@ public class TaxCalculatorService {
     setCompany(company);
     String tax = jsonService.convertToJson(getTaxValues());
     return tax.substring(0, tax.length() - 2);
+  }
+
+  public BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry) {
+
+    return dataBase.getAll()
+        .stream()
+        .filter(rules)
+        .map(value -> value.getListOfInvoiceEntry()
+            .stream()
+            .map(entry)
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+        )
+        .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
   }
 }

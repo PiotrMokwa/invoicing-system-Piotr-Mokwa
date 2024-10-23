@@ -1,11 +1,7 @@
 package pl.futurecollars.invoicing.db.nosql;
 
 import com.mongodb.client.MongoCollection;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.AllArgsConstructor;
@@ -13,16 +9,15 @@ import lombok.Builder;
 import lombok.Data;
 import org.bson.Document;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.model.InvoiceEntry;
+import pl.futurecollars.invoicing.db.WithId;
 
 @Builder
 @AllArgsConstructor
 @Data
-public class MongoBaseDatabase implements Database {
+public class MongoBaseDatabase<T extends WithId> implements Database<T> {
 
   public MongoIdProvider mongoIdProvider;
-  private MongoCollection<Invoice> invoicesCollection;
+  private MongoCollection<T> invoicesCollection;
 
   private Document documentIdFilter(Long id) {
 
@@ -30,51 +25,39 @@ public class MongoBaseDatabase implements Database {
   }
 
   @Override
-  public Long save(Invoice invoice) {
+  public Long save(T item) {
 
     long nextId = mongoIdProvider.getNextIdAndIncrement();
-    invoice.setId(nextId);
-    invoicesCollection.insertOne(invoice);
+    item.setId(nextId);
+    invoicesCollection.insertOne(item);
     return nextId;
   }
 
   @Override
-  public Invoice getById(Long id) {
+  public T getById(Long id) {
 
     return invoicesCollection.find(documentIdFilter(id)).first();
   }
 
   @Override
-  public List<Invoice> getAll() {
+  public List<T> getAll() {
     return StreamSupport.stream(invoicesCollection.find().spliterator(), false)
         .collect(Collectors.toList());
 
   }
 
   @Override
-  public Invoice update(Long id, Invoice updateInvoice) {
+  public T update(Long id, T updatedItem) {
 
-    updateInvoice.setId(id);
-    System.out.println("invoice id" + updateInvoice.getId());
-    return invoicesCollection.findOneAndReplace(documentIdFilter(id), updateInvoice);
+    updatedItem.setId(id);
+    System.out.println("invoice id" + updatedItem.getId());
+    return invoicesCollection.findOneAndReplace(documentIdFilter(id), updatedItem);
   }
 
   @Override
-  public Invoice delete(Long id) {
+  public T delete(Long id) {
 
     return invoicesCollection.findOneAndDelete(documentIdFilter(id));
   }
 
-  @Override
-  public BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry) {
-    return getAll()
-        .stream()
-        .filter(rules)
-        .map(value -> value.getListOfInvoiceEntry()
-            .stream()
-            .map(entry)
-            .reduce(BigDecimal.ZERO, BigDecimal::add)
-        )
-        .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
-  }
 }

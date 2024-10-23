@@ -17,13 +17,14 @@ import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import pl.futurecollars.invoicing.db.WithId;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @Data
 @Transactional
-public class Invoice {
+public class Invoice implements WithId {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +36,15 @@ public class Invoice {
   private LocalDate date;
   @JoinColumn(name = "buyer")
   @OneToOne(cascade = CascadeType.ALL)
+  @ApiModelProperty(value = "Buyer", required = true)
   private Company buyer;
   @JoinColumn(name = "seller")
   @OneToOne(cascade = CascadeType.ALL)
+  @ApiModelProperty(value = "Seller", required = true)
   private Company seller;
   @JoinTable(name = "invoice_invoice_entry", inverseJoinColumns = @JoinColumn(name = "invoice_entry_id"))
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @ApiModelProperty(value = "List of products/services", required = true)
   private List<InvoiceEntry> listOfInvoiceEntry;
 
   public Invoice() {

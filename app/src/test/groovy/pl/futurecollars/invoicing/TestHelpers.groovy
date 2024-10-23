@@ -52,9 +52,9 @@ abstract class TestHelpers extends Specification {
     }
 
 
-    static FileBasedDataBase createFileBase() {
+    static <T>FileBasedDataBase createFileBase(Class<T> clazz) {
         InvoiceSetup invoiceSetup = invoiceSetup()
-        FileBasedDataBase fileBasedDataBase = new FileBasedDataBase(invoiceSetup)
+        FileBasedDataBase fileBasedDataBase = new FileBasedDataBase(invoiceSetup,clazz)
         Invoice invoice1 = createFirstInvoice()
         Invoice invoice2 = createSecondInvoice()
         invoice1.setId(1)

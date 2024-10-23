@@ -1,22 +1,18 @@
 package pl.futurecollars.invoicing.service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.model.InvoiceEntry;
 
 @Slf4j
 @Service
 public class InvoiceService {
 
-  private final Database dataBase;
+  private final Database<Invoice> dataBase;
 
-  public InvoiceService(Database database) {
+  public InvoiceService(Database<Invoice> database) {
     this.dataBase = database;
 
   }
@@ -46,9 +42,5 @@ public class InvoiceService {
     return dataBase.save(invoice);
   }
 
-  public BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry) {
-    log.info("Invoice Service visit");
-    return dataBase.visit(rules, entry);
-  }
 }
 

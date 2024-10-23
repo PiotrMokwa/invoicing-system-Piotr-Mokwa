@@ -7,14 +7,16 @@ import org.springframework.test.annotation.IfProfileValue
 import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.dbAbstractTest
+import pl.futurecollars.invoicing.model.Invoice
 
 @ActiveProfiles("mongo")
 @SpringBootTest
+
 //@IfProfileValue(name="spring.profiles.active",value = "mongo")
 class MongoBaseDatabaseTest extends dbAbstractTest {
 
     @Autowired
-    MongoBaseDatabase mongoBaseDatabase
+    Database<Invoice> mongoBaseDatabase
 
     @Override
     Database getDataBaseInstance() {
