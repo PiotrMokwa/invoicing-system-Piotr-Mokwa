@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import pl.futurecollars.invoicing.model.Company;
 
 public interface CompaniesControllerApi {
+
   @ApiOperation(value = "Add new company")
   @PostMapping("add")
   ResponseEntity<?> addCompany(@RequestBody Company company);

@@ -13,6 +13,7 @@ import pl.futurecollars.invoicing.db.WithId;
 @Builder
 @AllArgsConstructor
 public class InMemoryDatabase<T extends WithId> implements Database<T> {
+
   @JsonIgnore
   private Long nextId;
   private final Map<Long, T> items;
