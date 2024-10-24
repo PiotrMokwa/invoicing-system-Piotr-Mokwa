@@ -22,3 +22,10 @@ jobs:
 
       - name: Build with gradle
         run: ./gradlew build
+
+      - name: Archive reports
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: reports
+          path: build /reports/**
