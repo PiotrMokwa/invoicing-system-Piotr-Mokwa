@@ -52,9 +52,9 @@ abstract class TestHelpers extends Specification {
     }
 
 
-    static <T>FileBasedDataBase createFileBase(Class<T> clazz) {
+    static <T> FileBasedDataBase createFileBase(Class<T> clazz) {
         InvoiceSetup invoiceSetup = invoiceSetup()
-        FileBasedDataBase fileBasedDataBase = new FileBasedDataBase(invoiceSetup,clazz)
+        FileBasedDataBase fileBasedDataBase = new FileBasedDataBase(invoiceSetup, clazz)
         Invoice invoice1 = createFirstInvoice()
         Invoice invoice2 = createSecondInvoice()
         invoice1.setId(1)
@@ -90,6 +90,17 @@ abstract class TestHelpers extends Specification {
         listOfTestedInvoice.add(invoice1)
         listOfTestedInvoice.add(invoice2)
         return listOfTestedInvoice
+    }
+
+    static List<Company> listOfCompaniesToTest() {
+        List<Company> listOfTestedCompanies = new LinkedList<>();
+        Company company1 = createFirstCompany()
+        Company company2 = createSecondCompany()
+        company1.setId(1)
+        company2.setId(2)
+        listOfTestedCompanies.add(company1)
+        listOfTestedCompanies.add(company2)
+        return listOfTestedCompanies
     }
 
     static Car firstTestCar() {

@@ -33,7 +33,7 @@ public class CompanySqlDatabase extends SqlDatabaseCommon implements Database<Co
 
   @Override
   public Company getById(Long id) {
-    return jdbcTemplate.query(askSqlForGetAllCompanies() + " where i.id = " + id, rse -> {
+    return jdbcTemplate.query(askSqlForGetAllCompanies() + " where c.id = " + id, rse -> {
       if (!rse.next()) {
         return null;
       } else {

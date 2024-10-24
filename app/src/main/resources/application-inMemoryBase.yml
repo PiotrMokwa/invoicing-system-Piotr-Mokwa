@@ -16,11 +16,6 @@ spring:
   config:
     activate:
       on-profile: inMemoryBase
-  datasource:
-    url: jdbc:postgresql://localhost:5432/invoicing
-    username: postgres
-    password: Piotr
-    driver-class-name: org.postgresql.Driver
   output:
     ansi:
       enabled: always

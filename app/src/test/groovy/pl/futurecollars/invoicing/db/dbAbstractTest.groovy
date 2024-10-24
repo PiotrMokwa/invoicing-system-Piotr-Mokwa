@@ -11,6 +11,7 @@ abstract class dbAbstractTest extends Specification {
     abstract Database getDataBaseInstance();
 
     Database database
+
     def setup() {
         database = getDataBaseInstance()
         System.out.println("setup before delete" + database.getAll())
@@ -18,7 +19,6 @@ abstract class dbAbstractTest extends Specification {
         System.out.println("setup after delete" + database.getAll())
         "listOfInvoicesSavedToBase"()
         System.out.println("setup after add" + database.getAll())
-
 
     }
 
@@ -37,12 +37,12 @@ abstract class dbAbstractTest extends Specification {
         database.save(list[0])
         database.save(list[1])
         System.out.println(" cala baza" + database.getAll())
-        database.getAll().forEach(invoice->"setIdNull"(invoice))
-        list.forEach(invoice->"setIdNull"(invoice))
+        database.getAll().forEach(invoice -> "setIdNull"(invoice))
+        list.forEach(invoice -> "setIdNull"(invoice))
         return list
     }
 
-    def "setIdNull"(Invoice invoice){
+    def "setIdNull"(Invoice invoice) {
         invoice.id = null
         invoice.getBuyer().id = null
         invoice.getSeller().id = null
@@ -66,7 +66,7 @@ abstract class dbAbstractTest extends Specification {
         System.out.println(" 3: " + database.getAll().size())
 
         then:
-        result == lastInviceId +1
+        result == lastInviceId + 1
 
 
     }
@@ -75,8 +75,8 @@ abstract class dbAbstractTest extends Specification {
         given:
         def invoiceFromBaseId = database.getAll().get(0).properties.get("id")
         System.out.println("properties " + invoiceFromBaseId)
-System.out.println("get all" + database.getAll())
-System.out.println("list of invoice"+"listOfInvoicesSavedToBase"())
+        System.out.println("get all" + database.getAll())
+        System.out.println("list of invoice" + "listOfInvoicesSavedToBase"())
 
         def invoice1 = createFirstInvoice()
 //        System.out.println(invoice1)
@@ -92,10 +92,10 @@ System.out.println("list of invoice"+"listOfInvoicesSavedToBase"())
 
     def " get all "() {
         given:
-       
+
         when:
         List<Invoice> result = database.getAll()
-        result.forEach(invoice->"setIdNull"(invoice))
+        result.forEach(invoice -> "setIdNull"(invoice))
 
         then:
         result.toString() == "listOfInvoicesSavedToBase"().toString()
@@ -108,7 +108,7 @@ System.out.println("list of invoice"+"listOfInvoicesSavedToBase"())
         def newInvoice = createFirstInvoice()
         newInvoice.buyer.name = "Updated Company"
         "setIdNull"(newInvoice)
-        def invoiceId =database.getAll().get(0).getId()
+        def invoiceId = database.getAll().get(0).getId()
 
         System.out.println("get all" + database.getAll())
         System.out.println("id" + invoiceId)
@@ -146,8 +146,8 @@ System.out.println("list of invoice"+"listOfInvoicesSavedToBase"())
 
 
     def " delete "() {
-given:
-def invoiceId =database.getAll().get(0).getId()
+        given:
+        def invoiceId = database.getAll().get(0).getId()
         when:
         database.delete(invoiceId)
         def emptyInvoice = database.getById(invoiceId)

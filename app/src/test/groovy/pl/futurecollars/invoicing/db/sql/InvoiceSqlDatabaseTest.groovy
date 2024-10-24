@@ -9,7 +9,7 @@ import pl.futurecollars.invoicing.db.dbAbstractTest
 
 import javax.sql.DataSource
 
-class SqlDatabaseTest extends dbAbstractTest {
+class InvoiceSqlDatabaseTest extends dbAbstractTest {
 
     @Override
      Database getDataBaseInstance() {
@@ -24,11 +24,6 @@ class SqlDatabaseTest extends dbAbstractTest {
         flyway.migrate()
 
         def database = new InvoiceSqlDatabase(jdbcTemplate)
-
-
         return database
     }
-
 }
-
-

@@ -3,15 +3,10 @@ package pl.futurecollars.invoicing.service
 import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.model.Company
-import pl.futurecollars.invoicing.model.Invoice
-import spock.lang.Specification
 import spock.lang.Title
 
 @Title("Testing Company Service")
 class CompaniesServiceTest extends TestHelpers {
-
-
-
 
     def "GetById"() {
         setup:
@@ -55,7 +50,7 @@ class CompaniesServiceTest extends TestHelpers {
 
         when: "method result"
 
-        def result =  companiesService.update(id, company)
+        def result = companiesService.update(id, company)
 
         then:
         result == company
@@ -68,14 +63,25 @@ class CompaniesServiceTest extends TestHelpers {
 
         def company = createFirstCompany()
         dataBase.delete(1) >> company
-        when: " delate invoice"
+        when: " delete company"
         def result = companiesService.delete(1)
         then: " check if is not empty"
         result == company
     }
 
     def "Save"() {
-    }
 
+        setup:
+        def dataBase = Mock(Database<Company>)
+        CompaniesService companiesService = new CompaniesService(dataBase)
+        def company = createFirstCompany()
+        dataBase.save(company) >> 1
+
+        when: " save company"
+        def result = companiesService.save(company)
+
+        then: " check if is not empty"
+        result == 1
+    }
 
 }
