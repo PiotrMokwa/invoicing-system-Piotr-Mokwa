@@ -1,52 +1,53 @@
 package pl.futurecollars.invoicing.db.file;
 
-import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.model.InvoiceEntry;
+import pl.futurecollars.invoicing.db.WithId;
 import pl.futurecollars.invoicing.service.FileService;
 import pl.futurecollars.invoicing.service.JsonService;
 import pl.futurecollars.invoicing.setup.InvoiceSetup;
 
+@AllArgsConstructor
 @Slf4j
 @Data
-public class FileBasedDataBase implements Database {
+public class FileBasedDataBase<T extends WithId> implements Database<T> {
 
   public JsonService jsonService;
   private final Path fileBase;
   private final Path fileId;
   private FileService fileService;
   private IdService invoiceId;
+  private final Class<T> classType;
 
-  public FileBasedDataBase(InvoiceSetup invoiceSetup) {
+  public FileBasedDataBase(InvoiceSetup invoiceSetup, Class<T> classType) {
 
     this.fileBase = Path.of(invoiceSetup.getFileBase());
     this.fileId = Path.of(invoiceSetup.getLastIdFilePath());
+    this.classType = classType;
     this.jsonService = new JsonService();
     this.fileService = new FileService();
     this.invoiceId = new IdService(invoiceSetup);
+
   }
 
   @Override
-  public Long save(Invoice invoice) {
+  public Long save(T item) {
     Long invoiceId = this.invoiceId.getId();
-    invoice.setId(invoiceId);
+    item.setId(invoiceId);
     this.invoiceId.setNextId();
-    fileService.appendLineToFile(fileBase, jsonService.convertToJson(invoice));
+    fileService.appendLineToFile(fileBase, jsonService.convertToJson(item));
     log.info("Invoice save");
     return invoiceId;
   }
 
   @Override
-  public Invoice getById(Long id) {
-    Invoice invoice = null;
+  public T getById(Long id) {
+    T invoice = null;
     int standartizeIdBetwenBases = 1;
     try {
       invoice = getAll().get(id.intValue() - standartizeIdBetwenBases);
@@ -58,10 +59,11 @@ public class FileBasedDataBase implements Database {
   }
 
   @Override
-  public List<Invoice> getAll() {
+  public List<T> getAll() {
 
     List<String> allLines = fileService.readAllLines(fileBase);
     String readedInvoices;
+
     readedInvoices = String.join("", allLines);
     String readedInvoicesWithoutLastSeparator = "";
     if (!allLines.isEmpty()) {
@@ -71,35 +73,35 @@ public class FileBasedDataBase implements Database {
         log.warn(e.toString());
       }
     }
-    log.info(" Get all invoices !!!");
+    log.info(" Get all item !!!");
     String startCollectionsSign = "[";
     String endCollectionsSign = "]";
-    return jsonService.convertToInvoices(startCollectionsSign + readedInvoicesWithoutLastSeparator + endCollectionsSign);
+    return jsonService.convertToObjectList(startCollectionsSign + readedInvoicesWithoutLastSeparator + endCollectionsSign, classType);
   }
 
   @Override
-  public Invoice delete(Long id) {
+  public T delete(Long id) {
     int standartizeIdBetwenBases = 1;
-    List<Invoice> listOfInvoice = getAll();
-    Invoice delatedInvoice = null;
+    List<T> listOfitems = getAll();
+    T delatedInvoice = null;
     try {
-      delatedInvoice = listOfInvoice.remove(id.intValue() - standartizeIdBetwenBases);
+      delatedInvoice = listOfitems.remove(id.intValue() - standartizeIdBetwenBases);
     } catch (IndexOutOfBoundsException e) {
       log.warn(e.toString());
     }
-    fileService.writeLinesToFile(fileBase, listOfInvoice.stream().map(value -> jsonService.convertToJson(value)).collect(Collectors.toList()));
+    fileService.writeLinesToFile(fileBase, listOfitems.stream().map(value -> jsonService.convertToJson(value)).collect(Collectors.toList()));
     log.info("Delete  !!! Invoice");
     return delatedInvoice;
   }
 
   @Override
-  public Invoice update(Long id, Invoice updateInvoice) {
-    List<Invoice> listOfInvoice = this.getAll();
-    updateInvoice.setId(id);
+  public T update(Long id, T updatedItem) {
+    List<T> listOfInvoice = this.getAll();
+    updatedItem.setId(id);
     int standartizeIdBetwenBases = 1;
-    Invoice deletedInvoice = null;
+    T deletedInvoice = null;
     try {
-      deletedInvoice = listOfInvoice.set(id.intValue() - standartizeIdBetwenBases, updateInvoice);
+      deletedInvoice = listOfInvoice.set(id.intValue() - standartizeIdBetwenBases, updatedItem);
     } catch (IndexOutOfBoundsException e) {
       log.warn(e.toString());
     }
@@ -108,16 +110,16 @@ public class FileBasedDataBase implements Database {
     return deletedInvoice;
   }
 
-  public BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry) {
-
-    return getAll()
-        .stream()
-        .filter(rules)
-        .map(value -> value.getListOfInvoiceEntry()
-            .stream()
-            .map(entry)
-            .reduce(BigDecimal.ZERO, BigDecimal::add)
-        )
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-  }
+  //  public BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry) {
+  //
+  //    return getAll()
+  //        .stream()
+  //        .filter(rules)
+  //        .map(value -> value.getListOfInvoiceEntry()
+  //            .stream()
+  //            .map(entry)
+  //            .reduce(BigDecimal.ZERO, BigDecimal::add)
+  //        )
+  //         .reduce(BigDecimal.ZERO, BigDecimal::add);
+  //  }
 }

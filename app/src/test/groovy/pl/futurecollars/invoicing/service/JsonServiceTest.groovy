@@ -11,7 +11,7 @@ class JsonServiceTest extends TestHelpers {
     def "companyInJson"() {
 
         return ("{" + System.lineSeparator()
-//                + "  \"id\" : \"1111\"," + System.lineSeparator()
+                + "  \"id\" : null," + System.lineSeparator()
                 + "  \"taxIdentification\" : \"444-444-44-44\"," + System.lineSeparator()
                 + "  \"name\" : \"ORLEN\"," + System.lineSeparator()
                 + "  \"address\" : \"Warszawa, street Marynarska\"," + System.lineSeparator()

@@ -1,24 +1,20 @@
 package pl.futurecollars.invoicing.db;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.model.InvoiceEntry;
 
-public interface Database {
+public interface Database<T> {
 
-  Long save(Invoice invoice);
+  Long save(T object);
 
-  Invoice getById(Long id);
+  T getById(Long id);
 
-  List<Invoice> getAll();
+  List<T> getAll();
 
-  Invoice update(Long id, Invoice updateInvoice);
+  T update(Long id, T updateObject);
 
-  Invoice delete(Long id);
+  T delete(Long id);
 
-  BigDecimal visit(Predicate<Invoice> rules, Function<InvoiceEntry, BigDecimal> entry);
+
+  //  BigDecimal visit(Predicate<T> rules, Function<InvoiceEntry, BigDecimal> entry);
 
 }

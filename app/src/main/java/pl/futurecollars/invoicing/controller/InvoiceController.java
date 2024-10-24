@@ -45,7 +45,7 @@ public class InvoiceController {
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
-  @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
+  @GetMapping(value = "get/{id}", produces = {"application/json;charset=UTF-8"})
   public ResponseEntity<?> getInvoice(@PathVariable("id") @Parameter(name = "id", description = "id", example = "1") Long id) {
     return Optional.ofNullable(invoiceService.getById(id))
         .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))

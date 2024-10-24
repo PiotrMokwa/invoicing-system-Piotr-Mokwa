@@ -9,7 +9,7 @@ import java.nio.file.Path
 class FileBasedDataBaseTest extends TestHelpers {
 
     @Subject
-    FileBasedDataBase fileBasedDataBase = createFileBase()
+    FileBasedDataBase<Invoice> fileBasedDataBase = createFileBase(Invoice.class)
 
 
     void setupSpec() {

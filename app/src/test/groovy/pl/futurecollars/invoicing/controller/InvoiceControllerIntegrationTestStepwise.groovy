@@ -75,11 +75,17 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .response
                 .contentAsString
 
+        def inviceCheck = mockMvc
+                .perform(get("/invoices/GET Invoices"))
+                .andReturn()
+                .response
+                .contentAsString
+        System.out.println("alla invoices test get invoices" + inviceCheck)
 
+
+System.out.println("get invoice number"())
         def addedInvoice = mockMvc
-                .perform(get("/invoices/" + addedInvoiceId)
-                        .content(invoiceAsJsonWithoutLastSign)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .perform(get("/invoices/get/" + addedInvoiceId))
                 .andExpect(status().isAccepted())
                 .andReturn()
                 .response
@@ -122,7 +128,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
         invoice.setId(invoiceNumber)
         when:
         def response = mockMvc
-                .perform(get("/invoices/" + invoiceNumber))
+                .perform(get("/invoices/get/" + invoiceNumber))
                 .andExpect(status().isAccepted())
                 .andReturn()
                 .response
@@ -153,7 +159,7 @@ class InvoiceControllerIntegrationTestStepwise extends TestHelpers {
                 .contentAsString
 
         def updatedInvoice = mockMvc
-                .perform(get("/invoices/" + invoiceNumber))
+                .perform(get("/invoices/get/" + invoiceNumber))
                 .andExpect(status().isAccepted())
                 .andReturn()
                 .response

@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pl.futurecollars.invoicing.db.WithId;
 import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.Tax;
@@ -23,6 +24,7 @@ public class JsonService {
 
   public String convertToJson(Object objectToConvert) {
 
+    System.out.println("convertToJson objectToConvert : " + objectToConvert);
     String separatorFromInvoiceObject = ", ";
     ObjectMapper objectMapper = new ObjectMapper();
     String convertedData = "";
@@ -33,8 +35,10 @@ public class JsonService {
       convertedData = objectMapper
           .writerWithDefaultPrettyPrinter()
           .writeValueAsString(objectToConvert);
+      System.out.println("convertToJson convertedData : " + convertedData);
+
     } catch (IOException exception) {
-      log.info(exception.toString());
+      log.warn(exception.toString());
     }
     log.info("Invoice Service convertToJson");
     return convertedData + separatorFromInvoiceObject;
@@ -90,25 +94,25 @@ public class JsonService {
     } catch (IOException exception) {
       log.info(exception.toString());
     }
-    log.info("Invoice Service convertToCompany");
+    log.info("Invoice Service convertToTax");
     return objectWithJason;
   }
 
-  // Generic to prepare. integration Test simplify
-  //  public  <T> T convertToObject (String jsonString, T type){
-  //    ObjectMapper objectMapper = new ObjectMapper();
-  //    TypeReference<T> ref = new TypeReference<>() { };
-  //    JavaType javaType = objectMapper.getTypeFactory().constructType(ref.getType());
-  //
-  //    T objectWithJason = null;
-  //    try {
-  //      objectMapper.registerModule(new JavaTimeModule());
-  //      objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-  //      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-  //      objectWithJason = objectMapper.readValue(jsonString,ref);
-  //    } catch (IOException exception) {
-  //      System.out.println(exception.getMessage());
-  //    }
-  //    return objectWithJason;
-  //  }
+  //   Generic to prepare. integration Test simplify
+  public <T extends WithId> List<T> convertToObjectList(String jsonString, Class<T> elementClass) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    CollectionType javaType = objectMapper.getTypeFactory()
+        .constructCollectionType(List.class, elementClass);
+    List<T> objectWithJason = null;
+    try {
+      objectMapper.registerModule(new JavaTimeModule());
+      objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+      objectWithJason = objectMapper.readValue(jsonString, javaType);
+    } catch (IOException exception) {
+      log.info(exception.toString());
+    }
+    log.info("Convert to {elementClass}");
+    return objectWithJason;
+  }
 }
