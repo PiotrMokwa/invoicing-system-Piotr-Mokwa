@@ -3,7 +3,8 @@ server:
 invoicing-system:
   dataBase: mongoDB
   dataBase.name: invoices
-  dataBase.collection: invoices
+  dataBase.collection.invoices: invoices
+  dataBase.collection.companies: companies
   dataBase.counter.collection: invoicesId
   dataBase.filePath.base: prodBase.txt
   dataBase.filePath.invoiceId: prodBaseId.txt
@@ -16,7 +17,6 @@ invoicing-system:
           invoicing: INFO
           db: DEBUG
 spring:
-  profiles: mongo
   output:
     ansi:
       enabled: always

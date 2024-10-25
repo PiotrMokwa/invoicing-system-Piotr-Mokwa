@@ -15,7 +15,7 @@ import pl.futurecollars.invoicing.service.TaxCalculatorService;
 
 @Api(tags = {"tax"})
 @RestController
-@RequestMapping("taxCalculator")
+@RequestMapping(value = "taxCalculator", produces = {"application/json;charset=UTF-8"})
 public class TaxCalculatorController implements TaxCalculatorControllerApi {
 
   TaxCalculatorService taxCalculatorService;

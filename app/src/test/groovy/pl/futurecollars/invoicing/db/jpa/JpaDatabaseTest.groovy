@@ -6,6 +6,7 @@ import org.springframework.test.annotation.IfProfileValue
 import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.dbAbstractTest
+import pl.futurecollars.invoicing.model.Invoice
 
 
 @ActiveProfiles("jpa")
@@ -18,7 +19,7 @@ class JpaDatabaseTest extends dbAbstractTest {
 
 
     @Override
-    Database getDataBaseInstance() {
+    Database<Invoice> getDataBaseInstance() {
         assert  invoiceRepository !=null
         return new JpaDatabase(invoiceRepository)
     }

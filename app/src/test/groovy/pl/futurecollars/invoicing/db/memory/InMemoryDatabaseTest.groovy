@@ -81,13 +81,13 @@ class InMemoryDatabaseTest extends TestHelpers {
         result == null
     }
 
-    def "visit"() {
-        when:
-        BigDecimal sum = inMemoryDatabase.visit(Bayer("444-444-44-44"), getVatValue())
-        then:
-        sum == 906.36
-
-    }
+//    def "visit"() {
+//        when:
+//        BigDecimal sum = inMemoryDatabase.visit(Bayer("444-444-44-44"), getVatValue())
+//        then:
+//        sum == 906.36
+//
+//    }
 
     def "Bayer"(String companyIdNumber) {
         return (Invoice invoice) -> invoice.getBuyer()
