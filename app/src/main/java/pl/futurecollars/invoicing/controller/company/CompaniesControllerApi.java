@@ -1,5 +1,6 @@
-package pl.futurecollars.invoicing.controller;
+package pl.futurecollars.invoicing.controller.company;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.ResponseEntity;
@@ -9,16 +10,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.futurecollars.invoicing.model.Company;
 
+@RequestMapping(value = "companies", produces = {"application/json;charset=UTF-8"})
+@Api(tags = {"companies controller"})
 public interface CompaniesControllerApi {
 
   @ApiOperation(value = "Add new company")
-  @PostMapping("add")
-  ResponseEntity<?> addCompany(@RequestBody Company company);
+  @PostMapping
+  long addCompany(@RequestBody Company company);
 
   @ApiOperation(value = "Get all companies")
-  @GetMapping(value = "/all", produces = {"application/json;charset=UTF-8"})
+  @GetMapping(produces = {"application/json;charset=UTF-8"})
   ResponseEntity<?> getCompanies();
 
   @ApiOperation(value = "Get single company with selected id")

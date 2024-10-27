@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller;
+package pl.futurecollars.invoicing.controller.invoice;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
