@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller
+package pl.futurecollars.invoicing.controller.invoice
 
 import org.spockframework.spring.EnableSharedInjection
 import org.springframework.http.MediaType
@@ -192,7 +192,7 @@ System.out.println("get invoice number"())
     def cleanupSpec() {
 
         //Clean File Base
-        deleteFilesBase(baseTestFileSpring, baseIdTestFileSpring)
+        deleteFilesBase(TestHelpers.baseTestFileSpring, TestHelpers.baseIdTestFileSpring)
 
     }
 

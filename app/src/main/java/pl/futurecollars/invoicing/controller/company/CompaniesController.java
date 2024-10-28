@@ -1,6 +1,5 @@
-package pl.futurecollars.invoicing.controller;
+package pl.futurecollars.invoicing.controller.company;
 
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.futurecollars.invoicing.Generated;
 import pl.futurecollars.invoicing.model.Company;
@@ -16,8 +14,7 @@ import pl.futurecollars.invoicing.service.CompaniesService;
 
 @Generated
 @RestController
-@RequestMapping(value = "companies", produces = {"application/json;charset=UTF-8"})
-@Api(tags = {"companies controller"})
+
 public class CompaniesController implements CompaniesControllerApi {
 
   CompaniesService companiesService;
@@ -28,16 +25,15 @@ public class CompaniesController implements CompaniesControllerApi {
 
   }
 
-  public ResponseEntity<?> addCompany(@RequestBody Company company) {
-    return Optional.ofNullable(companiesService.save(company))
-        .map(value -> ResponseEntity.status(HttpStatus.CREATED).body(value))
-        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+  public long addCompany(@RequestBody Company company) {
+    return companiesService.save(company);
   }
 
   public ResponseEntity<?> getCompanies() {
     return Optional.ofNullable(companiesService.getAll())
         .map(value -> ResponseEntity.status(HttpStatus.ACCEPTED).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
   }
 
   public ResponseEntity<?> getCompany(

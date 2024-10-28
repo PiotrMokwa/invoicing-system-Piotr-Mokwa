@@ -24,7 +24,7 @@ public class CompaniesService {
   public List<Company> getAll() {
     log.info("Companies Service getAll");
     System.out.println(dataBase.getAll());
-    return dataBase.getAll().isEmpty() ? null : dataBase.getAll();
+    return dataBase.getAll();
   }
 
   public Company update(Long id, Company updateInvoice) {

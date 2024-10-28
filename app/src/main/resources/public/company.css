@@ -1,0 +1,17 @@
+ @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+
+ table,th,td {
+    border: 1px solid black;
+    border-collapse: collapse;
+
+    }
+
+
+    body {
+      font-family: 'Nunito', sans-serif;
+        background-color: rgb(10, 10, 10);
+      font-weight: 400;
+      height: 100vh;
+      color: #ffffff;
+
+    }

@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller;
+package pl.futurecollars.invoicing.controller.taxcalculator;
 
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Parameter;
