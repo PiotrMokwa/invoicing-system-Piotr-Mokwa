@@ -1,0 +1,6 @@
+/* app.component.css */
+.content {
+  margin-top: 60px; /* Zapewnia, że treść nie zostanie przykryta przez nagłówek */
+  padding: 20px;
+  height: 2000px; /* Wysoka wysokość, aby umożliwić przewijanie */
+}
