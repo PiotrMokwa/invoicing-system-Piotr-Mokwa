@@ -1,0 +1,168 @@
+<table class="table table-striped table-dark table-bordered">
+  <thead class="table-dark sticky-top">
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Tax identification number</th>
+      <th>Address</th>
+      <th>Pension insurance</th>
+      <th>Health insurance</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let company of companies">
+      <td>{{ company.id }}</td>
+
+      <td *ngIf="!company.editMode">{{ company.name }}</td>
+      <td *ngIf="company.editMode">
+        <input
+          type="text"
+          [(ngModel)]="company.editedCompany.name"
+          type="text"
+          class="form-control"
+          name="id"
+        />{{ company.name }}
+      </td>
+
+      <td *ngIf="!company.editMode">{{ company.taxIdentification }}</td>
+      <td *ngIf="company.editMode">
+        <input
+          [(ngModel)]="company.editedCompany.taxIdentification"
+          type="text"
+          class="form-control"
+          name="id"
+        />{{ company.taxIdentification }}
+      </td>
+
+      <td *ngIf="!company.editMode">{{ company.address }}</td>
+      <td *ngIf="company.editMode">
+        <input
+          [(ngModel)]="company.editedCompany.address"
+          type="text"
+          class="form-control"
+          name="id"
+        />{{ company.editedCompany.address }}
+      </td>
+
+      <td *ngIf="!company.editMode">{{ company.pensionInsurance }}</td>
+      <td *ngIf="company.editMode">
+        <input
+          [(ngModel)]="company.editedCompany.pensionInsurance"
+          type="text"
+          class="form-control"
+          name="id"
+        />{{ company.editedCompany.pensionInsurance }}
+      </td>
+
+      <td *ngIf="!company.editMode">{{ company.healthInsuranceBaseValue }}</td>
+      <td *ngIf="company.editMode">
+        <input
+          [(ngModel)]="company.editedCompany.healthInsuranceBaseValue"
+          type="text"
+          class="form-control"
+          name="id"
+        />{{ company.editedCompany.healthInsuranceBaseValue }}
+      </td>
+
+      <td>
+        <button
+          *ngIf="!company.editMode"
+          (click)="deleteCompany(company)"
+          type="button"
+          class="btn btn-danger btn-sm"
+        >
+          Delete
+        </button>
+        <span *ngIf="!company.editMode"></span>
+
+        <button
+          *ngIf="!company.editMode"
+          (click)="triggerUpdate(company)"
+          type="button"
+          class="btn btn-secondary btn-sm"
+        >
+          Edit
+        </button>
+
+        <button
+          *ngIf="company.editMode"
+          (click)="updateCompany(company)"
+          type="button"
+          class="btn btn-primary btn-sm"
+        >
+          Update company
+        </button>
+        <span *ngIf="!company.editMode"></span>
+
+        <button
+          *ngIf="company.editMode"
+          (click)="cancelCompanyUpdate(company)"
+          type="button"
+          class="btn btn-primary btn-sm"
+        >
+          Cancel
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- <input
+          [(ngModel)]="newCompany.id"
+          type="text"
+          class="form-control"
+          name="id"
+        /> -->
+      </td>
+      <td>
+        <input
+          [(ngModel)]="newCompany.name"
+          type="text"
+          class="form-control"
+          name="name"
+        />
+      </td>
+      <td>
+        <input
+          [(ngModel)]="newCompany.taxIdentification"
+          type="text"
+          class="form-control"
+          name="taxIdentification"
+        />
+      </td>
+      <td>
+        <input
+          [(ngModel)]="newCompany.address"
+          type="text"
+          class="form-control"
+          name="address"
+        />
+      </td>
+      <td>
+        <input
+          [(ngModel)]="newCompany.pensionInsurance"
+          type="text"
+          class="form-control"
+          name="pensionInsurance"
+        />
+      </td>
+      <td>
+        <input
+          [(ngModel)]="newCompany.healthInsuranceBaseValue"
+          type="text"
+          class="form-control"
+          name="healthInsuranceBaseValue"
+        />
+      </td>
+      <td>
+        <button
+          (click)="addCompany()"
+          type="button"
+          class="btn btn-success btn-sm"
+        >
+          Add comapny
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
