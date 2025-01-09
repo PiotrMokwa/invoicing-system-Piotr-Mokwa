@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pl.futurecollars.invoicing.model.Company;
 
-
 @RequestMapping(value = "companies", produces = {"application/json;charset=UTF-8"})
 @Api(tags = {"companies controller"})
 public interface CompaniesControllerApi {
